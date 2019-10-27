@@ -1,6 +1,5 @@
 import {BaseRequest} from "../BaseRequest";
 import {IUserRequest} from "./dto/SignInRequest.g";
-import {SignInResponseDto} from "./dto/SignInResponse.g";
 
 export class AuthenticationApiRequest extends BaseRequest {
     constructor(protected baseUrl: string) {

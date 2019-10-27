@@ -23,11 +23,10 @@ interface IProps {
     SetFavorite: (productId: string) => void;
     navigate: (id: string) => void;
 }
-/*tslint:disable*/
+
 export class Drink extends PureComponent<IProps> {
     state = {
         removeAnim: new Animated.Value(1),
-        favorite: false
     }
 
     render(): JSX.Element {
@@ -39,7 +38,7 @@ export class Drink extends PureComponent<IProps> {
         return (
             <TouchableWithoutFeedback onPress={this.gotoDrinkPage}>
                 <View style={styles.container}>
-                    <View style={styleSheetFlatten(styles.innerContainer, (index%2)? styles.marginOdd : styles.marginEven )}>
+                    <View style={styleSheetFlatten(styles.innerContainer, (index % 2) ? styles.marginOdd : styles.marginEven )}>
                         <Text style={styles.nameDrink}>{name}</Text>
                         <Text style={styles.description}>кофейный напиток</Text>
                         <Image
@@ -62,9 +61,6 @@ export class Drink extends PureComponent<IProps> {
         );
     }
     private imageClickHandler = (): void => {
-        //this.setState({removeAnim: new Animated.Value(1)});
-        //@ts-ignore
-        this.setState({favorite: !this.state.favorite});
         Animated.timing(this.state.removeAnim, {
             toValue: 5,
             duration: 800,
@@ -75,11 +71,7 @@ export class Drink extends PureComponent<IProps> {
     };
     private gotoDrinkPage = (): void => {
         this.props.navigate(this.props.id);
-    }
-
-    animatHearth = () => {
-
-    }
+    };
 }
 
 const styles = StyleSheet.create({
@@ -126,11 +118,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     marginEven: {
-        marginHorizontal: 10
+        marginHorizontal: 10,
     },
     marginOdd: {
         marginRight: 10,
-        marginLeft: 0
+        marginLeft: 0,
     },
     price: {
         color: Colors.green,
