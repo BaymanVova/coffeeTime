@@ -1,0 +1,125 @@
+import React from "react";
+import {ImageBackground, Text, TextInput, TextStyle, TouchableOpacity, View, ViewStyle} from "react-native";
+import {NoHeader} from "../../common/components/Headers";
+import {IAuthParams} from "../../types/interfaces";
+import {connectAdv} from "../../core/store";
+import {IAppState} from "../../core/store/appState";
+import {Dispatch} from "redux";
+import {RegistrationAsyncActions} from "./RegistrationAsyncActions";
+import {BaseReduxComponent} from "../../core/BaseComponent";
+import LinearGradient from "react-native-linear-gradient";
+import {Title} from "../../common/components/Title";
+import {AuthInput} from "../../common/components/UI/AuthInput";
+import {RoundButton} from "../../common/components/UI/RoundButton";
+import {styleSheetCreate} from "../../common/utils";
+import {Colors, Fonts} from "../../core/theme";
+
+interface IStateProps {
+    isRegistration: boolean;
+    error: string;
+}
+
+interface IDispatchProps {
+    registration: (params: IAuthParams) => void;
+}
+
+interface IState {
+    email: string;
+    password: string;
+}
+
+@connectAdv(
+    ({registration}: IAppState): IStateProps => ({
+        isRegistration: registration.isRegistration,
+        error: registration.error,
+    }),
+    (dispatch: Dispatch): IDispatchProps => ({
+        registration: (params: IAuthParams): void => {
+            dispatch(RegistrationAsyncActions.registartion(params));
+        },
+    }),
+)
+
+export class RegistrationPage extends BaseReduxComponent<IStateProps, IDispatchProps, IState> {
+    static navigationOptions = NoHeader();
+
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            email: "",
+            password: "",
+        };
+    }
+    private onLoginChange = (login: string): void => {
+        this.setState({email: login});
+    };
+    private onPasswordChange = (password: string): void => {
+        this.setState({password: password});
+    };
+
+    render(): JSX.Element {
+        return (
+            <ImageBackground style={styles.container} source={require("../../../resources/images/main_background.png")}>
+                <LinearGradient colors={["transparent", "rgba(243, 233, 216, 0.8)"]}  style={styles.linearGradient}>
+                    <View style={styles.inner}>
+                        <Title style={styles.title}>{"CoffeTime"}</Title>
+                        <Text style={styles.subtitle}>территория кофе</Text>
+                        <View style={styles.groupinput}>
+                            <AuthInput
+                                placeholder={"Email"}
+                                value={this.state.email}
+                                onChangeText={this.onLoginChange}
+                            />
+                            <AuthInput
+                                placeholder={"Password"}
+                                value={this.state.password}
+                                onChangeText={this.onPasswordChange}
+                                secureTextEntry={true}
+                            />
+                            <RoundButton click={this.onRegPress}>
+                                Регистрация
+                            </RoundButton>
+                        </View>
+                    </View>
+                </LinearGradient>
+            </ImageBackground>
+        );
+    }
+
+    private onRegPress = (): void => {
+        this.dispatchProps.registration({email: this.state.email, password: this.state.password});
+    };
+}
+
+const styles = styleSheetCreate({
+    container: {
+        flex: 1,
+    } as ViewStyle,
+    inner: {
+        flex: 1,
+        alignItems: "center",
+    } as ViewStyle,
+    title: {
+        color: Colors.white,
+        fontSize: 64,
+    } as TextStyle,
+    subtitle: {
+        fontSize: 16,
+        color: Colors.white,
+        fontFamily: Fonts.light,
+        marginLeft: "22%",
+        marginTop: -15,
+    } as TextStyle,
+    linearGradient: {
+        flex: 1,
+        paddingTop: "20%",
+        paddingBottom: "10%",
+    } as ViewStyle,
+    groupinput: {
+        flex: 1,
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "flex-end",
+    } as ViewStyle,
+})
+

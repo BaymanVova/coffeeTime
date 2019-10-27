@@ -1,0 +1,109 @@
+{
+  "name": "testapp",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "preinstall": "node tools/forceYarn.js",
+    "postinstall": "node tools/init.js && node tools/postinstallFixes.js",
+    "ts": "tsc -p .",
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "start-reset-cache": "node node_modules/react-native/local-cli/cli.js start -- --reset-cache",
+    "android:run": "node node_modules/react-native/local-cli/cli.js run-android --no-packager",
+    "android:run+start": "node node_modules/react-native/local-cli/cli.js run-android --no-packager && node node_modules/react-native/local-cli/cli.js start",
+    "android:build-release-apk": "(cd android/ && gradlew assembleRelease)",
+    "android:clean": "(cd android/ && gradlew clean)",
+    "android:bundle": "node node_modules/react-native/local-cli/cli.js bundle --platform android --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --sourcemap-output android/app/src/main/assets/index.android.map --assets-dest android/app/src/main/res/ --dev false --sourcemap-sources-root=build",
+    "ios:run": "node node_modules/react-native/local-cli/cli.js run-ios --no-packager",
+    "check-dependencies-updates": "yarn outdated",
+    "tests": "jest",
+    "tests:watch": "jest --watchAll",
+    "lint": "tslint --project tsconfig.json",
+    "config-setup": "node tools/config-setup.js",
+    "ResourcesGenerator": "generator --dir=resources/images --out=src/common/ImageResources.g.ts"
+  },
+  "dependencies": {
+    "@react-native-community/async-storage": "1.6.1",
+    "bugsnag-react-native": "2.23.1",
+    "intl": "1.2.5",
+    "jwt-decode": "2.2.0",
+    "lodash": "4.17.15",
+    "moment": "2.24.0",
+    "react": "16.9.0",
+    "react-devtools": "^3.6.3",
+    "react-native": "0.60.5",
+    "react-native-gesture-handler": "1.4.1",
+    "react-native-linear-gradient": "^2.5.6",
+    "react-native-localization": "2.1.6",
+    "react-native-modal": "11.4.0",
+    "react-native-reanimated": "1.2.0",
+    "react-native-screens": "2.0.0-alpha.3",
+    "react-native-simple-toast": "0.1.1",
+    "react-navigation": "4.0.7",
+    "react-navigation-redux-helpers": "3.0.3",
+    "react-navigation-stack": "1.8.1",
+    "react-redux": "7.1.1",
+    "redux": "4.0.4",
+    "redux-logger": "3.0.6",
+    "redux-persist": "6.0.0",
+    "redux-promise": "0.6.0",
+    "redux-stack": "1.0.1",
+    "redux-thunk": "2.3.0",
+    "reflect-metadata": "0.1.13",
+    "rn-fetch-blob": "0.10.16",
+    "smart-plurals": "1.1.0",
+    "typescript-fsa": "3.0.0",
+    "typescript-fsa-reducers": "1.2.1",
+    "uuid": "3.3.3"
+  },
+  "devDependencies": {
+    "@babel/core": "7.6.0",
+    "@babel/plugin-proposal-decorators": "7.6.0",
+    "@babel/runtime": "7.6.0",
+    "@types/jest": "24.0.18",
+    "@types/lodash": "4.14.138",
+    "@types/react": "16.9.2",
+    "@types/react-native": "0.60.15",
+    "@types/react-native-fetch-blob": "0.10.5",
+    "@types/react-redux": "7.1.2",
+    "@types/react-test-renderer": "16.9.0",
+    "@types/redux-logger": "3.0.7",
+    "@types/redux-promise": "0.5.28",
+    "babel-jest": "24.9.0",
+    "image-resource-generator": "git+http://git.dextechnology.com/rn-components/image-resource-generator.git#master",
+    "jest": "24.9.0",
+    "metro-react-native-babel-preset": "0.56.0",
+    "react-native-dev-menu": "3.0.0",
+    "react-test-renderer": "16.9.0",
+    "ts-jest": "24.1.0",
+    "tslint": "5.20.0",
+    "tslint-react": "4.1.0",
+    "typescript": "3.6.3",
+    "write-json-file": "4.2.0"
+  },
+  "jest": {
+    "preset": "react-native",
+    "testPathIgnorePatterns": [
+      "node_modules"
+    ],
+    "transform": {
+      "^.+\\.js$": "<rootDir>/node_modules/react-native/jest/preprocessor.js",
+      "\\.(ts|tsx)$": "ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.jest.json"
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$"
+  },
+  "rnpm": {
+    "assets": [
+      "./resources/fonts"
+    ]
+  }
+}

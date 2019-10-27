@@ -1,0 +1,24 @@
+{
+  "appName": "testapp",
+  "environment": "Development",
+  "serverUrl": "http://someserver.com",
+  "identityUrl": "insert some here",
+  "bugReportApiKey": "apikey",
+  "useBugReporter": false,
+  "version": "1.0",
+  "build": 1,
+  "showVersion": false,
+  "supportUrl": "support@someaddress.com",
+  "devOptions": {
+    "useTestCase": false,
+    "disableReduxLogger": false,
+    "showAllComponentsOnStart": false,
+    "purgeStateOnStart": false,
+    "reduxLoggerWhiteList": [
+      ""
+    ],
+    "reduxLogger": {
+      "diff": false
+    }
+  }
+}
