@@ -1,7 +1,7 @@
 {
   "appName": "testapp",
   "environment": "Development",
-  "serverUrl": "http://someserver.com",
+  "serverUrl": "http://176.31.32.73:8000",
   "identityUrl": "insert some here",
   "bugReportApiKey": "apikey",
   "useBugReporter": false,

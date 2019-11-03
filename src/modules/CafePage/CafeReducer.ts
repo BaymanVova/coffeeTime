@@ -3,14 +3,15 @@ import {newState} from "../../common/newState";
 import {reducerWithInitialState} from "typescript-fsa-reducers";
 import {CafeActions} from "./CafeActions";
 import {Failure, Success} from "typescript-fsa";
-import {ICafeInfo, IProductBriefInfo} from "../../core/api/generated/CoffeeReqiest";
 import {LoadState} from "../../common/loadState";
+import {ICafeResponse} from "../../core/api/generated/dto/CafeResponse.g";
+import {IProductBriefInfoResponse} from "../../core/api/generated/dto/ProductResponse.g";
 
 function getInfoStartedHandler(state: ICafeState): ICafeState {
     return newState(state, {loadState: LoadState.firstLoad, error: ""});
 }
 
-function getInfoDoneHandler(state: ICafeState, success: Success<string, ICafeInfo | null>): ICafeState {
+function getInfoDoneHandler(state: ICafeState, success: Success<string, ICafeResponse | null>): ICafeState {
     return newState(state, {loadState: LoadState.allIsLoaded, error: "", cafeInfo: success.result});
 }
 
@@ -22,7 +23,7 @@ function getDrinksStartedHandler(state: ICafeState): ICafeState {
     return newState(state, {loadState: LoadState.firstLoad, error: ""});
 }
 
-function getDrinksDoneHandler(state: ICafeState, success: Success<string, IProductBriefInfo[]>): ICafeState {
+function getDrinksDoneHandler(state: ICafeState, success: Success<string, IProductBriefInfoResponse[]>): ICafeState {
     return newState(state, {loadState: LoadState.allIsLoaded, error: "", listDrinks: success.result});
 }
 

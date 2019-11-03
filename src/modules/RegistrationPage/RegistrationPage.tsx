@@ -1,5 +1,5 @@
 import React from "react";
-import {ImageBackground, Text, TextInput, TextStyle, TouchableOpacity, View, ViewStyle} from "react-native";
+import {ImageBackground, Text,  TextStyle,  View, ViewStyle} from "react-native";
 import {NoHeader} from "../../common/components/Headers";
 import {IAuthParams} from "../../types/interfaces";
 import {connectAdv} from "../../core/store";
@@ -13,6 +13,8 @@ import {AuthInput} from "../../common/components/UI/AuthInput";
 import {RoundButton} from "../../common/components/UI/RoundButton";
 import {styleSheetCreate} from "../../common/utils";
 import {Colors, Fonts} from "../../core/theme";
+import {NavigationActions} from "../../navigation/navigation";
+import {KeyboardAvoidingViewWrapper} from "../../common/components/KeyboardAvodingViewWrapper";
 
 interface IStateProps {
     isRegistration: boolean;
@@ -21,6 +23,7 @@ interface IStateProps {
 
 interface IDispatchProps {
     registration: (params: IAuthParams) => void;
+    navigateToBack: () => void;
 }
 
 interface IState {
@@ -36,6 +39,9 @@ interface IState {
     (dispatch: Dispatch): IDispatchProps => ({
         registration: (params: IAuthParams): void => {
             dispatch(RegistrationAsyncActions.registartion(params));
+        },
+        navigateToBack: (): void => {
+            dispatch(NavigationActions.navigateToBack());
         },
     }),
 )
@@ -59,7 +65,9 @@ export class RegistrationPage extends BaseReduxComponent<IStateProps, IDispatchP
 
     render(): JSX.Element {
         return (
+
             <ImageBackground style={styles.container} source={require("../../../resources/images/main_background.png")}>
+                <KeyboardAvoidingViewWrapper style={{flex: 1}}>
                 <LinearGradient colors={["transparent", "rgba(243, 233, 216, 0.8)"]}  style={styles.linearGradient}>
                     <View style={styles.inner}>
                         <Title style={styles.title}>{"CoffeTime"}</Title>
@@ -79,10 +87,15 @@ export class RegistrationPage extends BaseReduxComponent<IStateProps, IDispatchP
                             <RoundButton click={this.onRegPress}>
                                 Регистрация
                             </RoundButton>
+                            <RoundButton click={this.dispatchProps.navigateToBack}>
+                                Назад
+                            </RoundButton>
                         </View>
                     </View>
                 </LinearGradient>
+                </KeyboardAvoidingViewWrapper>
             </ImageBackground>
+
         );
     }
 

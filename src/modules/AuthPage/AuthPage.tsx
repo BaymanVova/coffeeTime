@@ -12,6 +12,7 @@ import {RoundButton} from "../../common/components/UI/RoundButton";
 import {AuthInput} from "../../common/components/UI/AuthInput";
 import {Title} from "../../common/components/Title";
 import {Colors, Fonts} from "../../core/theme";
+import {NavigationActions} from "../../navigation/navigation";
 
 interface IStateProps {
     isAuthorizing: boolean;
@@ -20,6 +21,7 @@ interface IStateProps {
 
 interface IDispatchProps {
     login: (login: string, password: string) => void;
+    navigateToBack: () => void;
 }
 
 interface IState {
@@ -35,6 +37,9 @@ interface IState {
     (dispatch: Dispatch): IDispatchProps => ({
         login: (login: string, password: string): void => {
             dispatch(AuthAsyncActions.login(login, password));
+        },
+        navigateToBack: (): void => {
+            dispatch(NavigationActions.navigateToBack());
         },
     }),
 )
@@ -59,7 +64,6 @@ export class AuthPage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
 
         return (
             <ImageBackground style={styles.container} source={require("../../../resources/images/main_background.png")}>
-                <LinearGradient colors={["transparent", "rgba(243, 233, 216, 0.8)"]}  style={styles.linearGradient}>
                     <View style={styles.inner}>
                         <Title style={styles.title}>{"CoffeTime"}</Title>
                         <Text style={styles.subtitle}>территория кофе</Text>
@@ -78,9 +82,11 @@ export class AuthPage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
                             <RoundButton click={this.onLoginPress} disabled={this.stateProps.isAuthorizing}>
                                 Вход
                             </RoundButton>
+                            <RoundButton click={this.dispatchProps.navigateToBack}>
+                                Назад
+                            </RoundButton>
                         </View>
                     </View>
-                </LinearGradient>
             </ImageBackground>
         );
     }
@@ -92,6 +98,8 @@ export class AuthPage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
 const styles = styleSheetCreate({
     container: {
         flex: 1,
+        paddingTop: "20%",
+        paddingBottom: "10%",
     } as ViewStyle,
     inner: {
         flex: 1,

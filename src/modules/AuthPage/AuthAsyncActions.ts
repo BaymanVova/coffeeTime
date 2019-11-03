@@ -4,7 +4,7 @@ import {AuthActions} from "./AuthActions";
 import {IAuthParams} from "../../types/interfaces";
 import {NavigationActions} from "../../navigation/navigation";
 import {requestsRepository} from "../../core/api/requestsRepository";
-import {UserRequest} from "../../core/api/generated/CoffeeReqiest";
+import {showToast} from "../../common/showToast";
 
 export class AuthAsyncActions {
     static login(login: string, password: string): SimpleThunk {
@@ -15,10 +15,12 @@ export class AuthAsyncActions {
             };
             try {
                 dispatch(AuthActions.login.started(params));
-                const guid: string | null = await requestsRepository.authenticationApiRequest.authorization(params as UserRequest);
+               // const guid: string | null = await requestsRepository.authenticationApiRequest.authorization(params as UserRequest);
+                const guid = await  requestsRepository.signInApiRequest.signIn(params);
                 dispatch(AuthActions.login.done({params, result: guid || ""}));
                 dispatch(NavigationActions.navigateToListCafe());
             } catch (error) {
+                showToast(error.message);
                 dispatch(AuthActions.login.failed({params, error}));
             }
         };

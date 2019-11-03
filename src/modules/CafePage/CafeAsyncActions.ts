@@ -3,7 +3,6 @@ import {Dispatch} from "redux";
 import {IAppState} from "../../core/store/appState";
 import {CafeActions} from "./CafeActions";
 import {requestsRepository} from "../../core/api/requestsRepository";
-import {CafeRequest, ProductRequest} from "../../core/api/generated/CoffeeReqiest";
 
 export class CafeAsyncActions {
     static getCafeInfo(cafeId: string): SimpleThunk {
@@ -11,7 +10,7 @@ export class CafeAsyncActions {
             try {
                 dispatch(CafeActions.getInfo.started);
                 const sessionId = getState().system.authToken || "";
-                const cafeInfo = await requestsRepository.cafeApiRequest.getCafe({sessionId, cafeId} as CafeRequest);
+                const cafeInfo = await requestsRepository.cafeApiRequest.getCafe({sessionId, cafeId});
                 console.log("cafeInfo", cafeInfo);
                 dispatch(CafeActions.getInfo.done({params: cafeId, result: cafeInfo}));
             } catch (error) {
@@ -25,7 +24,7 @@ export class CafeAsyncActions {
             try {
                 dispatch(CafeActions.getListDrinks.started);
                 const sessionId = getState().system.authToken || "";
-                const listDrinks = await requestsRepository.productsApiRequest.getProductsCafe({sessionId, cafeId} as CafeRequest) || [];
+                const listDrinks = await requestsRepository.productsApiRequest.getProductsCafe({sessionId, cafeId}) || [];
                 console.log("listDrinks", listDrinks);
                 dispatch(CafeActions.getListDrinks.done({params: cafeId, result: listDrinks}));
             } catch (error) {
@@ -38,9 +37,9 @@ export class CafeAsyncActions {
             try {
                 dispatch(CafeActions.setFavorite.started);
                 const sessionId = getState().system.authToken || "";
-                const setfavorite = await requestsRepository.favoriteApiRequest.set({sessionId, productId} as ProductRequest) || [];
+                const setfavorite = await requestsRepository.favoriteApiRequest.set({sessionId, productId});
                 console.log("setfavorite", setfavorite);
-                dispatch(CafeActions.setFavorite.done);
+                dispatch(CafeActions.setFavorite.done( {params: productId, result: setfavorite}));
             } catch (error) {
                 dispatch(CafeActions.setFavorite.failed(error));
             }
@@ -50,13 +49,13 @@ export class CafeAsyncActions {
     static unsetFavorite(productId: string): SimpleThunk {
         return async function(dispatch: Dispatch, getState: () => IAppState): Promise<void> {
             try {
-                dispatch(CafeActions.setFavorite.started);
+                dispatch(CafeActions.unsetFavorite.started);
                 const sessionId = getState().system.authToken || "";
-                const unsetfavorite = await requestsRepository.favoriteApiRequest.unset({sessionId, productId} as ProductRequest) || [];
+                const unsetfavorite = await requestsRepository.favoriteApiRequest.unset({sessionId, productId});
                 console.log("unsetfavorite", unsetfavorite);
-                dispatch(CafeActions.setFavorite.done);
+                dispatch(CafeActions.unsetFavorite.done({params: productId, result: unsetfavorite}));
             } catch (error) {
-                dispatch(CafeActions.setFavorite.failed(error));
+                dispatch(CafeActions.unsetFavorite.failed(error));
             }
         };
     }

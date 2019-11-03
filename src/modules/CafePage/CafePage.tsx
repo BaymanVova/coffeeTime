@@ -15,7 +15,6 @@ import {styleSheetCreate} from "../../common/utils";
 import {Colors, CommonStyles, windowHeight} from "../../core/theme";
 import LinearGradient from "react-native-linear-gradient";
 import {defaultIdExtractor, getParamsFromProps} from "../../common/helpers";
-import {ICafeInfo, IProductBriefInfo} from "../../core/api/generated/CoffeeReqiest";
 import {connectAdv} from "../../core/store";
 import {IAppState} from "../../core/store/appState";
 import {Dispatch} from "redux";
@@ -28,12 +27,18 @@ import {LoadState} from "../../common/loadState";
 import {FlatListWrapper} from "../../common/components/FlatListWrapper";
 import {EmptyComponent} from "../../common/components/EmptyComponent";
 import {NavigationActions} from "../../navigation/navigation";
+import {ICafeResponse} from "../../core/api/generated/dto/CafeResponse.g";
+import {IProductBriefInfoResponse} from "../../core/api/generated/dto/ProductResponse.g";
 
+interface IState {
+    animation: Animated.Value;
+    isBackAnim: boolean;
+}
 interface IStateProps {
     loadState: LoadState;
     error: string;
-    cafeInfo: ICafeInfo;
-    listDrinks: IProductBriefInfo[] | [];
+    cafeInfo: ICafeResponse;
+    listDrinks: IProductBriefInfoResponse[] | [];
 }
 
 interface IDispatchProps {
@@ -70,13 +75,12 @@ interface IDispatchProps {
     }),
 )
 
-export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IEmpty> {
+export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IState> {
 
     static navigationOptions = PlainHeader({ title: "CoffeTime", headerStyle: CommonHeaderStyles.defaultHeaderStyle});
     state = {
-        removeAnim: new Animated.Value(1),
-        favorite: false,
-        allCafe: null,
+        animation: new Animated.Value(0),
+        isBackAnim: false,
     };
 
     componentDidMount(): void {
@@ -87,6 +91,7 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IE
     }
 
     render(): JSX.Element {
+        console.log("RENDER");
         const {loadState, listDrinks, error} = this.stateProps
         if (this.stateProps.cafeInfo != null) {
             return (
@@ -114,18 +119,27 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IE
 
     }
 
-    private setFavoriteDrink = (drinkId: string): void => {
+    private setFavoriteDrink = async (drinkId: string): Promise<void> => {
         const drink = this.stateProps.listDrinks.find(_ => _.id == drinkId);
         if (drink) {
             if (drink.favorite) {
-                this.dispatchProps.unsetFavorite(drinkId);
+                //@ts-ignore
+                this.stateProps.listDrinks.find(_ => _.id == drinkId).favorite = false;
+                //@ts-ignore
+                this.stateProps.listDrinks.find(_ => _.id == drinkId).name = "1231312313";
+                await this.dispatchProps.unsetFavorite(drinkId);
                 console.log("unsetFavorite");
             } else {
-                this.dispatchProps.setFavorite(drinkId);
+                //@ts-ignore
+                this.stateProps.listDrinks.find(_ => _.id == drinkId).favorite = true;
+                await this.dispatchProps.setFavorite(drinkId);
                 console.log("setFavorite");
             }
         }
-        this.tryAgain();
+        //@ts-ignore
+        const {id} = getParamsFromProps(this.props);
+        await this.dispatchProps.getDrinks(id);
+        console.log("setFavoriteDrink FINISH");
     };
 
     private gotoDrinkPage = (id: string): void => {
@@ -134,8 +148,7 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IE
 
     private renderListHeader = (): JSX.Element => {
         const {cafeInfo} = this.stateProps;
-        const favoriteIcon: JSX.Element = this.state.favorite ? <Image source={require("../../../resources/images/icon_heart_pink.png")}/>
-            : <Image source={require("../../../resources/images/icon_heart_gray.png")}/>;
+        const favoriteIcon: JSX.Element = <Image source={require("../../../resources/images/icon_heart_gray.png")}/>;
 
         return (
             <ImageBackground style={styles.container} source={{uri: cafeInfo.images}}>
@@ -148,16 +161,17 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IE
                         <Title>{cafeInfo.name}</Title>
                         <View style={styles.containerRow}>
                             <Text style={styles.address}>{cafeInfo.address}</Text>
-                            <Animated.View
-                                style={
-                                    { transform: [
-                                            { scale: this.state.removeAnim.interpolate(
-                                                    { inputRange: [1, 2, 3, 4, 5], outputRange: [1, 1.4, 1, 1.4, 1]})}]}}
-                            >
-                                <TouchableOpacity onPress={this.imageClickHandler}>
-                                    {favoriteIcon}
-                                </TouchableOpacity>
-                            </Animated.View>
+
+                                <View style={styles.checkBox}>
+                                    <Animated.View
+                                        style={this.state.isBackAnim ? this.animation.animationBack : this.animation.animationForward}
+                                    >
+                                    <TouchableOpacity onPress={this.imageClickHandler}>
+                                        {favoriteIcon}
+                                    </TouchableOpacity>
+                                    </Animated.View>
+                                </View>
+
                         </View>
                     </View>
                 </LinearGradient>
@@ -165,7 +179,7 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IE
         );
     }
 
-    private renderDrink = ({item, index }: {item: IProductBriefInfo, index: number}): JSX.Element => {
+    private renderDrink = ({item, index }: {item: IProductBriefInfoResponse, index: number}): JSX.Element => {
         return (
                 <Drink
                     id={item.id}
@@ -192,18 +206,42 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IE
         //@ts-ignore
         const {id} = getParamsFromProps(this.props);
         this.dispatchProps.getDrinks(id);
+
+        console.log("tryAgain");
     }
 
     private imageClickHandler = (): void => {
-        //@ts-ignore
-        this.setState({favorite: !this.state.favorite});
-        Animated.timing(this.state.removeAnim, {
-            toValue: 5,
-            duration: 800,
-            easing: Easing.linear,
-            useNativeDriver: true,
-        }).start(() => { this.setState({removeAnim: new Animated.Value(1)});});
+        if (!this.state.isBackAnim) {
+            console.log("вперёд", this.state.animation);
+            Animated.timing(this.state.animation, {
+                toValue: 1,
+                duration: 300,
+                easing: Easing.linear,
+                useNativeDriver: true,
+            }).start(() => { this.setState({animation: new Animated.Value(1), isBackAnim: true});
+            });
+        } else {
+            console.log("назад", this.state.animation);
+            Animated.timing(this.state.animation, {
+                toValue: 2,
+                duration: 300,
+                easing: Easing.linear,
+                useNativeDriver: true,
+            }).start(() => { this.setState({animation: new Animated.Value(0), isBackAnim: false});
+            });
+        }
     };
+
+    private animation = styleSheetCreate({
+        animationForward: {
+            transform: [{ translateX: this.state.animation.interpolate(
+                    { inputRange: [0, 1], outputRange: [0, 30]})}],
+        },
+        animationBack: {
+            transform: [{ translateX: this.state.animation.interpolate(
+                    { inputRange: [1, 2], outputRange: [30, 0]})}],
+        },
+    });
 }
 
 const styles = styleSheetCreate({
@@ -234,4 +272,11 @@ const styles = styleSheetCreate({
     } as ViewStyle,
     linearGradient: {
         flex: 1,
-    }});
+    },
+    checkBox: {
+        backgroundColor: Colors.white,
+        borderRadius: 20,
+        width: 50,
+        height: 25,
+    } as ViewStyle,
+});

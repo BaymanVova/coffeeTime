@@ -1,6 +1,6 @@
 import {actionCreator} from "../../core/store";
-import {IAuthParams} from "../../types/interfaces";
+import {IUserRequest} from "../../core/api/generated/dto/SignInRequest.g";
 
 export class RegistrationActions {
-    static registration = actionCreator.async<IAuthParams, string, Error>("Reg/REGISTRATION");
+    static registration = actionCreator.async<IUserRequest, string, Error>("Reg/REGISTRATION");
 }

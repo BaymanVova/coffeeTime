@@ -5,15 +5,11 @@ import {showInDevAlert} from "../helpers";
 import {localization} from "../localization/localization";
 import {MainButton} from "../components/MainButton";
 import {ButtonType} from "../enums/buttonType";
-import {Drink} from "../components/Drink";
 import {Ingredient} from "../components/Ingredient";
 import {styleSheetCreate} from "../utils";
-import {UserClientRequest, UserRequest, ProductBriefInfo, ProductClientRequest} from "../../core/api/generated/CoffeeReqiest";
 import {Cafe} from "../components/Cafe";
-import {CafePage} from "../../modules/CafePage/CafePage";
 
 interface IState {
-    allCafe: ProductBriefInfo[] | null;
 }
 
 export class Playground extends PureComponent<IEmpty, IState> {
@@ -24,57 +20,7 @@ export class Playground extends PureComponent<IEmpty, IState> {
         };
     }
 
-    componentDidMount(): void {
-        let id: string | null = "";
-        console.log("componentDidMount");
-        const data: UserRequest = new UserRequest({
-            email: "vladika_ept@mail.ru",
-            password: "123456",
-        });
-        const request: UserClientRequest = new UserClientRequest();
-        request.authorization(data)
-            .then(response => {
-                id = response ? response : "";
-               /* const cafeRequest: CafeClientRequest = new CafeClientRequest();
-                cafeRequest.getAll(id)
-                    .then(responseCafe => {
-                         const allCafe: CafeInfo [] | null = responseCafe;
-                         this.setState({allCafe: allCafe});
-                        console.log("кафешки", responseCafe);
-                    });*/
-                const cafeRequest: ProductClientRequest = new ProductClientRequest();
-                cafeRequest.getAll(id)
-                    .then(responseCafe => {
-                        const allCafe: ProductBriefInfo [] | null = responseCafe;
-                        this.setState({allCafe: allCafe});
-                        console.log("кафешки", responseCafe);
-                    });
-                console.log(response);
-            })
-            .catch(error => console.log(error));
-    }
-
     render(): JSX.Element {
-        let cafe1: JSX.Element[] = [];
-        //@ts-ignore
-        if (this.state.allCafe) {
-            cafe1 = (
-                this.state.allCafe.map( (item: ProductBriefInfo) => {
-                    return (
-                        <Drink
-                            id={item.id}
-                            cofeeId={item.cofeId}
-                            name={item.name}
-                            price={item.price}
-                            favorite={item.favorite}
-                            imagePath={item.imagesPath}
-                            key={item.id}
-                        />
-                    );
-                })
-            );
-        }
-
          return (
             <ScrollView style={CommonStyles.flexWhiteBackground}>
                <View style={{flex: 1, flexDirection: "row", flexWrap: "nowrap", justifyContent: "flex-start"}}>
@@ -113,11 +59,6 @@ export class Playground extends PureComponent<IEmpty, IState> {
                     description={"dadad"}
                     images={"https://pmr.md/images/firm/foto/d0/d03ce518.jpg"}
                 />
-                <View style={{flex: 1, flexDirection: "row", flexWrap: "wrap", paddingLeft: 10}}>
-                    {cafe1}
-                </View>
-
-
                 <MainButton type={ButtonType.Action} onPress={showInDevAlert} title={localization.common.ok}/>
                 <MainButton type={ButtonType.Negative} onPress={showInDevAlert} title={localization.common.ok}/>
                 <MainButton type={ButtonType.Positive} onPress={showInDevAlert} title={localization.common.ok}/>

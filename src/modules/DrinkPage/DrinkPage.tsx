@@ -7,22 +7,25 @@ import {Ingredient} from "../../common/components/Ingredient";
 import {PlainHeader} from "../../common/components/Headers";
 import {CommonHeaderStyles} from "../../core/theme/commonStyles";
 import {LoadState} from "../../common/loadState";
-import {IProductFullInfo} from "../../core/api/generated/CoffeeReqiest";
 import {connectAdv} from "../../core/store";
 import {IAppState} from "../../core/store/appState";
 import {Dispatch} from "redux";
 import {DrinkAsyncAction} from "./DrinkAsyncAction";
 import {BaseReduxComponent} from "../../core/BaseComponent";
 import {getParamsFromProps} from "../../common/helpers";
+import {CafeAsyncActions} from "../CafePage/CafeAsyncActions";
+import {IProductFullInfoResponse} from "../../core/api/generated/dto/ProductResponse.g";
 
 interface IStateProps {
     loadState: LoadState;
     error: string;
-    drinkInfo: IProductFullInfo | null;
+    drinkInfo: IProductFullInfoResponse | null;
 }
 
 interface IDispatchProps {
     getDrink: (productId: string) => void;
+    setFavorite: (id: string) => void;
+    unsetFavorite: (id: string) => void;
 }
 
 @connectAdv(
@@ -34,6 +37,12 @@ interface IDispatchProps {
     (dispatch: Dispatch): IDispatchProps => ({
         getDrink: (productId: string): void => {
             dispatch(DrinkAsyncAction.getDrink(productId));
+        },
+        setFavorite: (id: string): void => {
+            dispatch(CafeAsyncActions.setFavorite(id));
+        },
+        unsetFavorite: (id: string): void => {
+            dispatch(CafeAsyncActions.unsetFavorite(id));
         },
     }),
 )
@@ -47,6 +56,7 @@ export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps> {
         this.dispatchProps.getDrink(id);
     }
     render(): JSX.Element {
+        console.log("RENDER");
         const {drinkInfo} = this.stateProps;
         const favoriteIcon: JSX.Element | null = drinkInfo ? drinkInfo.favarite ? <Image source={require("../../../resources/images/icon_heart_pink.png")}/>
             : <Image source={require("../../../resources/images/icon_heart_gray.png")}/> : null;
@@ -59,7 +69,7 @@ export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps> {
                             <Title>
                                 {drinkInfo.productName}
                             </Title>
-                            <TouchableOpacity style={styles.hearthButton}>
+                            <TouchableOpacity style={styles.hearthButton} onPress={ () => this.setFavorite(drinkInfo.id)}>
                                 {favoriteIcon}
                             </TouchableOpacity>
                         </View>
@@ -112,6 +122,22 @@ export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps> {
             );
         }
     }
+
+    private setFavorite = async (drinkId: string): Promise<void> => {
+        if (this.stateProps.drinkInfo && !this.stateProps.drinkInfo.favarite) {
+            console.log("(this.stateProps.drinkInfo && this.stateProps.drinkInfo.favarite");
+            this.stateProps.drinkInfo.favarite = true ;
+            await this.dispatchProps.setFavorite(drinkId);
+        } else if (this.stateProps.drinkInfo && this.stateProps.drinkInfo.favarite) {
+            console.log("(this.stateProps.drinkInfo && !!!!!this.stateProps.drinkInfo.favarite");
+            this.stateProps.drinkInfo.favarite = false ;
+            await this.dispatchProps.unsetFavorite(drinkId);
+        }
+
+        //@ts-ignore
+        const {id} = getParamsFromProps(this.props);
+        await this.dispatchProps.getDrink(id);
+    };
 }
 
 const styles = styleSheetCreate({

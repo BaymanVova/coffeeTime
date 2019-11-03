@@ -60,14 +60,16 @@ export class Drink extends PureComponent<IProps> {
             </TouchableWithoutFeedback>
         );
     }
-    private imageClickHandler = (): void => {
+    private imageClickHandler = async (): Promise<void> => {
+        await this.props.SetFavorite(this.props.id);
+        console.log("анимация");
         Animated.timing(this.state.removeAnim, {
             toValue: 5,
             duration: 800,
             easing: Easing.linear,
             useNativeDriver: true,
         }).start(() => { this.setState({removeAnim: new Animated.Value(1)});});
-        this.props.SetFavorite(this.props.id);
+
     };
     private gotoDrinkPage = (): void => {
         this.props.navigate(this.props.id);

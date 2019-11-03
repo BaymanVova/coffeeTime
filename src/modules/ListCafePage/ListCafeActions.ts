@@ -1,6 +1,6 @@
 import {actionCreator} from "../../core/store";
-import {ICafeInfo} from "../../core/api/generated/CoffeeReqiest";
+import {ICafeResponse} from "../../core/api/generated/dto/CafeResponse.g";
 
 export class ListCafeActions {
-    static getListCafe = actionCreator.async<IEmpty, ICafeInfo[], Error>("ListCafe/GET_ALLCAFE");
+    static getListCafe = actionCreator.async<IEmpty, ICafeResponse[], Error>("ListCafe/GET_ALLCAFE");
 }

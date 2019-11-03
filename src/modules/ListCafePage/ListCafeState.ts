@@ -1,8 +1,8 @@
-import {ICafeInfo} from "../../core/api/generated/CoffeeReqiest";
 import {LoadState} from "../../common/loadState";
+import {ICafeResponse} from "../../core/api/generated/dto/CafeResponse.g";
 
 export interface IListCafeState {
-    listCafe: ICafeInfo[];
+    listCafe: ICafeResponse[];
     loadState: LoadState;
     error?: string;
 }

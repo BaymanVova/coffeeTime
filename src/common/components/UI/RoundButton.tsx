@@ -32,7 +32,8 @@ const styles = styleSheetCreate({
         marginBottom: 20,
     } as ViewStyle,
     text: {
-        fontSize: 21,
+        fontSize: 18,
         color: Colors.white,
+        textTransform: "uppercase",
     } as TextStyle,
 })

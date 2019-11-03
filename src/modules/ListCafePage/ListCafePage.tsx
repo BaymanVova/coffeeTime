@@ -1,7 +1,6 @@
 import React from "react";
 import {View} from "react-native";
 import {Cafe} from "../../common/components/Cafe";
-import {ICafeInfo} from "../../core/api/generated/CoffeeReqiest";
 import {connectAdv} from "../../core/store";
 import {IAppState} from "../../core/store/appState";
 import {Dispatch} from "redux";
@@ -14,9 +13,10 @@ import {FlatListWrapper} from "../../common/components/FlatListWrapper";
 import {LoadState} from "../../common/loadState";
 import {defaultIdExtractor} from "../../common/helpers";
 import {EmptyComponent} from "../../common/components/EmptyComponent";
+import {ICafeResponse} from "../../core/api/generated/dto/CafeResponse.g";
 
 interface IStateProps {
-    listCafe: ICafeInfo[] | null;
+    listCafe: ICafeResponse[] | null;
     loadState: LoadState;
     error?: string;
 }
@@ -71,7 +71,7 @@ export class ListCafePage extends BaseReduxComponent<IStateProps, IDispatchProps
         );
     }
 
-    private  renderCafe = ({item}: {item: ICafeInfo}): JSX.Element => {
+    private  renderCafe = ({item}: {item: ICafeResponse}): JSX.Element => {
         return (
             <Cafe
                 id={item.id}

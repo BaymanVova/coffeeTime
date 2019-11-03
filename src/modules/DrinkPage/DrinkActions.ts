@@ -1,6 +1,6 @@
 import {actionCreator} from "../../core/store";
-import {IProductFullInfo} from "../../core/api/generated/CoffeeReqiest";
+import {IProductFullInfoResponse} from "../../core/api/generated/dto/ProductResponse.g";
 
 export class DrinkActions {
-    static getDrink = actionCreator.async<string, IProductFullInfo, Error>("Drink/GET_DRINK");
+    static getDrink = actionCreator.async<string, IProductFullInfoResponse, Error>("Drink/GET_DRINK");
 }
