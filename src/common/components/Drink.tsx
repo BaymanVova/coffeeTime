@@ -7,7 +7,7 @@ import {
     TouchableOpacity,
     Animated,
     Easing,
-    TouchableWithoutFeedback,
+    TouchableWithoutFeedback, ViewStyle,
 } from "react-native";
 import {Colors, Fonts} from "../../core/theme";
 import {styleSheetFlatten} from "../utils";
@@ -23,12 +23,29 @@ interface IProps {
     SetFavorite: (productId: string) => void;
     navigate: (id: string) => void;
 }
+interface IState {
+    removeAnim: Animated.Value;
+}
 
-export class Drink extends PureComponent<IProps> {
-    state = {
-        removeAnim: new Animated.Value(1),
+export class Drink extends PureComponent<IProps, IState> {
+    private animatedStyle: ViewStyle;
+    private transformAnimation: Animated.CompositeAnimation;
+
+    constructor(props: IProps) {
+        super(props);
+        this.state = {
+            removeAnim: new Animated.Value(1),
+        };
+        this.animatedStyle = {
+            transform: [ {
+                scale: this.state.removeAnim.interpolate({ inputRange: [1, 2, 3, 4, 5], outputRange: [1, 1.4, 1, 1.4, 1]})}] as any };
+        this.transformAnimation = Animated.timing(this.state.removeAnim, {
+            toValue: 5,
+            duration: 800,
+            easing: Easing.linear,
+            useNativeDriver: true,
+        });
     }
-
     render(): JSX.Element {
         const {name, price, imagePath, favorite, index} = this.props;
         console.log(imagePath);
@@ -47,9 +64,7 @@ export class Drink extends PureComponent<IProps> {
                         />
                         <View style={styles.containerRow}>
                             <Text style={styles.price}>{price} P</Text>
-                            <Animated.View
-                                style={{ transform: [{ scale: this.state.removeAnim.interpolate({ inputRange: [1, 2, 3, 4, 5], outputRange: [1, 1.4, 1, 1.4, 1]})}]}}
-                            >
+                            <Animated.View style={this.animatedStyle}>
                                 <TouchableOpacity onPress={this.imageClickHandler}>
                                     {favoriteIcon}
                                 </TouchableOpacity>
@@ -63,13 +78,9 @@ export class Drink extends PureComponent<IProps> {
     private imageClickHandler = async (): Promise<void> => {
         await this.props.SetFavorite(this.props.id);
         console.log("анимация");
-        Animated.timing(this.state.removeAnim, {
-            toValue: 5,
-            duration: 800,
-            easing: Easing.linear,
-            useNativeDriver: true,
-        }).start(() => { this.setState({removeAnim: new Animated.Value(1)});});
-
+        Animated.sequence([
+            this.transformAnimation,
+        ]).start(() => { this.setState({removeAnim: new Animated.Value(1)}); });
     };
     private gotoDrinkPage = (): void => {
         this.props.navigate(this.props.id);
@@ -114,7 +125,7 @@ const styles = StyleSheet.create({
         marginTop: 15,
         marginBottom: 5,
     },
-    containerRow:{
+    containerRow: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",

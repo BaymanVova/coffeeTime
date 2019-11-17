@@ -39,7 +39,7 @@ export class CafeAsyncActions {
                 const sessionId = getState().system.authToken || "";
                 const setfavorite = await requestsRepository.favoriteApiRequest.set({sessionId, productId});
                 console.log("setfavorite", setfavorite);
-                dispatch(CafeActions.setFavorite.done( {params: productId, result: setfavorite}));
+                dispatch(CafeActions.setFavorite.done);
             } catch (error) {
                 dispatch(CafeActions.setFavorite.failed(error));
             }
@@ -49,13 +49,13 @@ export class CafeAsyncActions {
     static unsetFavorite(productId: string): SimpleThunk {
         return async function(dispatch: Dispatch, getState: () => IAppState): Promise<void> {
             try {
-                dispatch(CafeActions.unsetFavorite.started);
+                dispatch(CafeActions.setFavorite.started);
                 const sessionId = getState().system.authToken || "";
                 const unsetfavorite = await requestsRepository.favoriteApiRequest.unset({sessionId, productId});
                 console.log("unsetfavorite", unsetfavorite);
-                dispatch(CafeActions.unsetFavorite.done({params: productId, result: unsetfavorite}));
+                dispatch(CafeActions.setFavorite.done);
             } catch (error) {
-                dispatch(CafeActions.unsetFavorite.failed(error));
+                dispatch(CafeActions.setFavorite.failed(error));
             }
         };
     }

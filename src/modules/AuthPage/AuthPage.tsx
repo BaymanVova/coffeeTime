@@ -7,7 +7,6 @@ import {Dispatch} from "redux";
 import {AuthAsyncActions} from "./AuthAsyncActions";
 import {NoHeader} from "../../common/components/Headers";
 import {styleSheetCreate} from "../../common/utils";
-import LinearGradient from "react-native-linear-gradient";
 import {RoundButton} from "../../common/components/UI/RoundButton";
 import {AuthInput} from "../../common/components/UI/AuthInput";
 import {Title} from "../../common/components/Title";

@@ -6,7 +6,7 @@ import {
     ImageBackground,
     Text,
     TextStyle,
-    TouchableOpacity,
+    TouchableWithoutFeedback,
     View,
     ViewStyle,
 } from "react-native";
@@ -32,7 +32,7 @@ import {IProductBriefInfoResponse} from "../../core/api/generated/dto/ProductRes
 
 interface IState {
     animation: Animated.Value;
-    isBackAnim: boolean;
+    isFiltered: boolean;
 }
 interface IStateProps {
     loadState: LoadState;
@@ -77,11 +77,32 @@ interface IDispatchProps {
 
 export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IState> {
 
+    private animatedStyle: ViewStyle;
+    private transformForwardAnimation: Animated.CompositeAnimation;
+    private transformBackAnimation: Animated.CompositeAnimation;
+
     static navigationOptions = PlainHeader({ title: "CoffeTime", headerStyle: CommonHeaderStyles.defaultHeaderStyle});
-    state = {
-        animation: new Animated.Value(0),
-        isBackAnim: false,
-    };
+
+    constructor(props: IStateProps) {
+        super(props);
+        this.state = {
+            animation: new Animated.Value(0),
+            isFiltered: false,
+        };
+        this.animatedStyle = { transform: [{translateX: this.state.animation}] as any };
+        this.transformForwardAnimation = Animated.timing(this.state.animation, {
+            toValue: 30,
+            duration: 200,
+            easing: Easing.linear,
+            useNativeDriver: true,
+        });
+        this.transformBackAnimation = Animated.timing(this.state.animation, {
+            toValue: 0,
+            duration: 200,
+            easing: Easing.linear,
+            useNativeDriver: true,
+        });
+    }
 
     componentDidMount(): void {
         //@ts-ignore
@@ -148,7 +169,8 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
 
     private renderListHeader = (): JSX.Element => {
         const {cafeInfo} = this.stateProps;
-        const favoriteIcon: JSX.Element = <Image source={require("../../../resources/images/icon_heart_gray.png")}/>;
+        const favoriteIcon: JSX.Element = this.state.isFiltered ? <Image source={require("../../../resources/images/icon_heart_pink.png")}/>
+        : <Image source={require("../../../resources/images/icon_heart_gray.png")}/>;
 
         return (
             <ImageBackground style={styles.container} source={{uri: cafeInfo.images}}>
@@ -161,17 +183,13 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
                         <Title>{cafeInfo.name}</Title>
                         <View style={styles.containerRow}>
                             <Text style={styles.address}>{cafeInfo.address}</Text>
-
+                            <TouchableWithoutFeedback onPress={this.imageClickHandler}>
                                 <View style={styles.checkBox}>
-                                    <Animated.View
-                                        style={this.state.isBackAnim ? this.animation.animationBack : this.animation.animationForward}
-                                    >
-                                    <TouchableOpacity onPress={this.imageClickHandler}>
-                                        {favoriteIcon}
-                                    </TouchableOpacity>
+                                    <Animated.View style={this.animatedStyle}>
+                                            {favoriteIcon}
                                     </Animated.View>
                                 </View>
-
+                            </TouchableWithoutFeedback>
                         </View>
                     </View>
                 </LinearGradient>
@@ -211,37 +229,27 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
     }
 
     private imageClickHandler = (): void => {
-        if (!this.state.isBackAnim) {
+        if (!this.state.isFiltered) {
             console.log("вперёд", this.state.animation);
-            Animated.timing(this.state.animation, {
-                toValue: 1,
-                duration: 300,
-                easing: Easing.linear,
-                useNativeDriver: true,
-            }).start(() => { this.setState({animation: new Animated.Value(1), isBackAnim: true});
-            });
+            Animated.sequence([
+                this.transformForwardAnimation,
+            ]).start();
         } else {
             console.log("назад", this.state.animation);
-            Animated.timing(this.state.animation, {
-                toValue: 2,
-                duration: 300,
-                easing: Easing.linear,
-                useNativeDriver: true,
-            }).start(() => { this.setState({animation: new Animated.Value(0), isBackAnim: false});
-            });
+            Animated.sequence([
+                this.transformBackAnimation,
+            ]).start();
         }
+        if (!this.state.isFiltered) {
+            this.stateProps.listDrinks = this.stateProps.listDrinks.filter(_ => _.favorite);
+        } else {
+            //@ts-ignore
+            const {id} = getParamsFromProps(this.props);
+            this.dispatchProps.getDrinks(id);
+        }
+        this.setState((prevstate) => ({ isFiltered: !prevstate.isFiltered }));
     };
 
-    private animation = styleSheetCreate({
-        animationForward: {
-            transform: [{ translateX: this.state.animation.interpolate(
-                    { inputRange: [0, 1], outputRange: [0, 30]})}],
-        },
-        animationBack: {
-            transform: [{ translateX: this.state.animation.interpolate(
-                    { inputRange: [1, 2], outputRange: [30, 0]})}],
-        },
-    });
 }
 
 const styles = styleSheetCreate({
@@ -277,6 +285,6 @@ const styles = styleSheetCreate({
         backgroundColor: Colors.white,
         borderRadius: 20,
         width: 50,
-        height: 25,
+        height: 18,
     } as ViewStyle,
 });

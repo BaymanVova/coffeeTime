@@ -1,5 +1,5 @@
 import React from "react";
-import {Image, ImageStyle, Text, TextStyle, TouchableOpacity, View, ViewStyle} from "react-native";
+import {Animated, Easing, Image, ImageStyle, Text, TextStyle, TouchableOpacity, View, ViewStyle} from "react-native";
 import {Title} from "../../common/components/Title";
 import {styleSheetCreate} from "../../common/utils";
 import {Colors, Fonts, windowHeight} from "../../core/theme";
@@ -27,6 +27,10 @@ interface IDispatchProps {
     setFavorite: (id: string) => void;
     unsetFavorite: (id: string) => void;
 }
+interface IState {
+    isFavorite: boolean;
+    removeAnim: Animated.Value;
+}
 
 @connectAdv(
     ({drinkInfo}: IAppState): IStateProps => ({
@@ -47,18 +51,42 @@ interface IDispatchProps {
     }),
 )
 
-export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps> {
+export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps, IState> {
     static navigationOptions = PlainHeader({ title: "CoffeTime", headerStyle: CommonHeaderStyles.defaultHeaderStyle});
+
+    private animatedStyle: ViewStyle;
+    private transformAnimation: Animated.CompositeAnimation;
+
+    constructor(props: IStateProps) {
+        super(props);
+        this.state = {
+            removeAnim: new Animated.Value(1),
+            isFavorite : false,
+        };
+        this.animatedStyle = {
+            transform: [ {
+                scale: this.state.removeAnim.interpolate({ inputRange: [1, 2, 3, 4, 5], outputRange: [1, 1.4, 1, 1.4, 1]})}] as any };
+        this.transformAnimation = Animated.timing(this.state.removeAnim, {
+            toValue: 5,
+            duration: 800,
+            easing: Easing.linear,
+            useNativeDriver: true,
+        });
+    }
 
     componentDidMount(): void {
         //@ts-ignore
         const {id} = getParamsFromProps(this.props);
         this.dispatchProps.getDrink(id);
+        console.log("favarite", this.stateProps.drinkInfo!.favarite );
+        console.log("favarite2", this.stateProps );
+        this.setState({isFavorite: this.stateProps.drinkInfo!.favarite });
+        console.log("favarite3",  this.state.isFavorite);
     }
     render(): JSX.Element {
-        console.log("RENDER");
+        console.log("RENDER", this.state.isFavorite);
         const {drinkInfo} = this.stateProps;
-        const favoriteIcon: JSX.Element | null = drinkInfo ? drinkInfo.favarite ? <Image source={require("../../../resources/images/icon_heart_pink.png")}/>
+        const favoriteIcon: JSX.Element | null = drinkInfo ? this.state.isFavorite ? <Image source={require("../../../resources/images/icon_heart_pink.png")}/>
             : <Image source={require("../../../resources/images/icon_heart_gray.png")}/> : null;
         if (drinkInfo) {
             return (
@@ -69,9 +97,11 @@ export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps> {
                             <Title>
                                 {drinkInfo.productName}
                             </Title>
-                            <TouchableOpacity style={styles.hearthButton} onPress={ () => this.setFavorite(drinkInfo.id)}>
-                                {favoriteIcon}
-                            </TouchableOpacity>
+                            <Animated.View style={this.animatedStyle}>
+                                <TouchableOpacity style={styles.hearthButton} onPress={() => this.setFavorite(drinkInfo.id)}>
+                                    {favoriteIcon}
+                                </TouchableOpacity>
+                            </Animated.View>
                         </View>
                         <View style={styles.ingredients}>
                             <Ingredient
@@ -124,19 +154,19 @@ export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps> {
     }
 
     private setFavorite = async (drinkId: string): Promise<void> => {
-        if (this.stateProps.drinkInfo && !this.stateProps.drinkInfo.favarite) {
-            console.log("(this.stateProps.drinkInfo && this.stateProps.drinkInfo.favarite");
-            this.stateProps.drinkInfo.favarite = true ;
+        Animated.sequence([
+            this.transformAnimation,
+        ]).start(() => { this.setState({removeAnim: new Animated.Value(1)}); });
+        if (!this.state.isFavorite) {
+            this.setState({isFavorite: true});
             await this.dispatchProps.setFavorite(drinkId);
-        } else if (this.stateProps.drinkInfo && this.stateProps.drinkInfo.favarite) {
-            console.log("(this.stateProps.drinkInfo && !!!!!this.stateProps.drinkInfo.favarite");
-            this.stateProps.drinkInfo.favarite = false ;
+        } else if (this.state.isFavorite) {
+            this.setState({isFavorite: false});
             await this.dispatchProps.unsetFavorite(drinkId);
         }
-
         //@ts-ignore
-        const {id} = getParamsFromProps(this.props);
-        await this.dispatchProps.getDrink(id);
+       // const {id} = getParamsFromProps(this.props);
+        //await this.dispatchProps.getDrink(id);
     };
 }
 

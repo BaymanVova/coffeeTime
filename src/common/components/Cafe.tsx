@@ -56,7 +56,6 @@ const styles = styleSheetCreate({
         },
         shadowOpacity: 1.0,
         elevation: 5,
-        height: 125,
     } as ViewStyle,
     boxWithImage: {
         justifyContent: "center",
