@@ -4,6 +4,7 @@ import {IProductBriefInfoResponse} from "../../core/api/generated/dto/ProductRes
 
 export class CafeActions {
     static getInfo = actionCreator.async<string, ICafeResponse | null, Error>("Cafe/GET_INFO");
+    //TODO: Небольшие ошибки в типе
     static getListDrinks = actionCreator.async<string, IProductBriefInfoResponse[], Error>("Cafe/GET_LISTDRINK");
     static setFavorite = actionCreator.async<string, boolean, Error>("Cafe/SET_FAVORITE");
     static unsetFavorite = actionCreator.async<string, boolean, Error>("Cafe/UNSET_FAVORITE");

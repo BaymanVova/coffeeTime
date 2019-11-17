@@ -49,6 +49,10 @@ interface IDispatchProps {
     gotoDrinkInfo: (id: string) => void;
 }
 
+/*
+TODO: cafeInfo не должно иметь в этом случае ИЛИ, если нет кафе то значит мы что-то не так сделали
+ и должны или падать или показывать оишбку пользователю
+*/
 @connectAdv(
     ({cafeInfo}: IAppState): IStateProps => ({
         loadState: cafeInfo.loadState,
@@ -105,6 +109,7 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
     }
 
     componentDidMount(): void {
+        //TODO: Нужно описать тип и избавиться от ts-ignore
         //@ts-ignore
         const {id} = getParamsFromProps(this.props);
         this.dispatchProps.getInfo(id);
@@ -113,9 +118,12 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
 
     render(): JSX.Element {
         console.log("RENDER");
+        //TODO: Пропущен ;
         const {loadState, listDrinks, error} = this.stateProps
+        //TODO: В connect видно что это условие невыполнимо
         if (this.stateProps.cafeInfo != null) {
             return (
+                //TODO: Лишние контейнеры, потенциально можно оставить только один
                 <View style={CommonStyles.flex1}>
                     <View style={styles.listDrinks}>
                         <FlatListWrapper
@@ -141,6 +149,11 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
     }
 
     private setFavoriteDrink = async (drinkId: string): Promise<void> => {
+        /*
+            TODO: В целом не правильная работа с redux, ты не должен изменять данные таким образом никогда,
+             изменения должны происходить в reducer'e, это можно было достигнуть если вносить изменения на всех 3-х action'aх
+             Также нужно удалить ts-ignore
+        */
         const drink = this.stateProps.listDrinks.find(_ => _.id == drinkId);
         if (drink) {
             if (drink.favorite) {
@@ -168,12 +181,14 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
     }
 
     private renderListHeader = (): JSX.Element => {
+        //TODO: В целом, хорошо было бы вынести это в компонент
         const {cafeInfo} = this.stateProps;
         const favoriteIcon: JSX.Element = this.state.isFiltered ? <Image source={require("../../../resources/images/icon_heart_pink.png")}/>
         : <Image source={require("../../../resources/images/icon_heart_gray.png")}/>;
 
         return (
             <ImageBackground style={styles.container} source={{uri: cafeInfo.images}}>
+                //TODO: Массивы нужно было вынести в переменные, и в качестве цветов использовать цвета из Colors
                 <LinearGradient
                     colors={["transparent", "transparent", "#F7ECDA"]}
                     locations={[0, 0.4, 1]}
@@ -197,6 +212,7 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
         );
     }
 
+    //TODO: Можно упростить тип, ведь index тебе не нужен здесь
     private renderDrink = ({item, index }: {item: IProductBriefInfoResponse, index: number}): JSX.Element => {
         return (
                 <Drink
@@ -214,6 +230,7 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
         );
     }
 
+    //TODO: Можно сократить количество строчек, пропущен ;, текст в локализации должен быть
     private renderEmptyComponent = (): JSX.Element => {
         return (
             <EmptyComponent title={"Список напитков пуст"}/>

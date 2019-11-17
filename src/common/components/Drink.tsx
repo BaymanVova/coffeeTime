@@ -76,8 +76,10 @@ export class Drink extends PureComponent<IProps, IState> {
         );
     }
     private imageClickHandler = async (): Promise<void> => {
+        //TODO: Это не должна быть async операцией
         await this.props.SetFavorite(this.props.id);
         console.log("анимация");
+        //TODO: Здесь sequence не нужен
         Animated.sequence([
             this.transformAnimation,
         ]).start(() => { this.setState({removeAnim: new Animated.Value(1)}); });

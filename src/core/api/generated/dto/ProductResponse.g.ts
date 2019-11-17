@@ -4,6 +4,7 @@ export interface IAttributeInfo {
     description: string;
     iconType: string;
 }
+//TODO: В API действительно такой интерфейс приходит? В плане названий?
 export interface IProductFullInfoResponse {
     id: string;
     productName: string;

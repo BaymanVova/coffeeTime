@@ -11,6 +11,7 @@ interface IProps {
 
 export class RoundButton extends PureComponent<IProps> {
     render(): JSX.Element {
+        //TODO: Нужно исправить ошибки TSLint'a в целом по проекту
         return (
             <TouchableOpacity onPress={this.props.click} style={styleSheetFlatten(styles.button, this.props.styles)} disabled={this.props.disabled}>
                 <Text style={styles.text}>

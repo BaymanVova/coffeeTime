@@ -57,6 +57,7 @@ export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps, I
     private animatedStyle: ViewStyle;
     private transformAnimation: Animated.CompositeAnimation;
 
+    //TODO: Почему здесь IStateProps?
     constructor(props: IStateProps) {
         super(props);
         this.state = {
@@ -75,6 +76,8 @@ export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps, I
     }
 
     componentDidMount(): void {
+        //TODO: Избавиться от ts-ignore и ненужных консолей
+        //TODO: this.stateProps.drinkInfo! таким образом ты упадешь
         //@ts-ignore
         const {id} = getParamsFromProps(this.props);
         this.dispatchProps.getDrink(id);
@@ -86,6 +89,7 @@ export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps, I
     render(): JSX.Element {
         console.log("RENDER", this.state.isFavorite);
         const {drinkInfo} = this.stateProps;
+        //TODO: Работу с FavoriteIcon можно было бы вынести в отдельный компонент, уже несколько раз встречается
         const favoriteIcon: JSX.Element | null = drinkInfo ? this.state.isFavorite ? <Image source={require("../../../resources/images/icon_heart_pink.png")}/>
             : <Image source={require("../../../resources/images/icon_heart_gray.png")}/> : null;
         if (drinkInfo) {
@@ -125,6 +129,7 @@ export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps, I
                                 iconType={"temperature"}
                             />
                         </View>
+                        //TODO: Должно быть в локалищации
                         <Text style={styles.text}>
                             Здесь могло быть описание напитка, но почему-то сервер его не возвращает,
                             а в макете он есть,

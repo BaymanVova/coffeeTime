@@ -45,13 +45,17 @@ interface IState {
 export class AuthPage extends BaseReduxComponent<IStateProps, IDispatchProps, IState> {
     static navigationOptions = NoHeader();
 
+    //TODO: В данном случае это не any, props сейчас это обычный пустой интерфейс, т.е. IEmpty
     constructor(props: any) {
         super(props);
+        //TODO: Не должно быть здесь
         this.state = {
             login: "vladika_ept@mail.ru",
             password: "123456",
         };
     }
+
+    //TODO: Можно сократить
     private onLoginChange = (login: string): void => {
         this.setState({login: login});
     };
@@ -61,12 +65,17 @@ export class AuthPage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
     render(): JSX.Element {
         const {login, password} = this.state;
 
+        //TODO: Что-то не так пошло с отступами, скорее всего был ещё один контейнер и просто потом исчез
         return (
+            //TODO: В следующем стриме покажу как с изображениями работать
             <ImageBackground style={styles.container} source={require("../../../resources/images/main_background.png")}>
+                    //TODO: Не совсем понятно зачем этот контейнер
                     <View style={styles.inner}>
+                        //TODO: Оба текста должны быть вынесены в локализации
                         <Title style={styles.title}>{"CoffeTime"}</Title>
                         <Text style={styles.subtitle}>территория кофе</Text>
                         <View style={styles.groupinput}>
+                            //TODO: Указываются не все параметры для Input'ов (большего комфорта пользователя), покажу в стриме
                             <AuthInput
                                 placeholder={"Email"}
                                 value={login}
@@ -78,6 +87,7 @@ export class AuthPage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
                                 onChangeText={this.onPasswordChange}
                                 secureTextEntry={true}
                             />
+                            //TODO: Оба текста должны быть вынесены в локализации
                             <RoundButton click={this.onLoginPress} disabled={this.stateProps.isAuthorizing}>
                                 Вход
                             </RoundButton>
@@ -93,7 +103,7 @@ export class AuthPage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
         this.dispatchProps.login(this.state.login, this.state.password);
     };
 }
-
+//TODO: Лучше стараться не использовать width: "100%"
 const styles = styleSheetCreate({
     container: {
         flex: 1,
@@ -127,3 +137,4 @@ const styles = styleSheetCreate({
         justifyContent: "flex-end",
     } as ViewStyle,
 })
+//TODO: Пропущен ;

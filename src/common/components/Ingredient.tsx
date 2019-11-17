@@ -13,6 +13,8 @@ export class Ingredient extends PureComponent<IProp> {
         const {description, iconType} = this.props;
         let iconImage: JSX.Element =  <Image style={styles.iconImage} source={require("../../../resources/images/milk.png")}/>;
         let iconColor: string = "";
+        //TODO: Слишком сложная логика (по сути все if'ы проходятся), и она не должна происходить
+        // в рендере, нужно вынесли в отдельный метод для получения изображения и цвета при помощи switch/case
         if (iconType === "milk") {
             iconImage =   <Image style={styles.iconImage} source={require("../../../resources/images/milk.png")}/>;
             iconColor = Colors.milkOval;
@@ -41,6 +43,7 @@ export class Ingredient extends PureComponent<IProp> {
     }
 }
 
+//TODO: Нужны типы для объектов
 const styles = StyleSheet.create({
     container: {
         justifyContent: "center",

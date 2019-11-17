@@ -3,6 +3,7 @@ import {Image, ImageStyle, TextInput, TextInputProps, TextStyle, View, ViewStyle
 import {styleSheetCreate, styleSheetFlatten} from "../../utils";
 import {Colors, Fonts} from "../../../core/theme";
 
+//TODO: Не совсем понятно зачем папку создавать
 export class AuthInput extends PureComponent<TextInputProps> {
         render(): JSX.Element {
             return (

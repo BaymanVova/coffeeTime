@@ -14,6 +14,7 @@ interface ICafeProps {
 }
 
 export class Cafe extends PureComponent<ICafeProps> {
+    //TODO: Ненужный конструктор
     constructor(props: ICafeProps) {
         super(props);
     }
@@ -54,7 +55,7 @@ const styles = styleSheetCreate({
             width: 3,
             height: 3,
         },
-        shadowOpacity: 1.0,
+        shadowOpacity: 1.0, //TODO: этот код работает только на iOS, для этого нужно использовать platform.os для разделения
         elevation: 5,
     } as ViewStyle,
     boxWithImage: {
