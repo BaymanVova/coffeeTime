@@ -12,14 +12,14 @@ import {
 } from "react-native";
 import {Title} from "../../common/components/Title";
 import {styleSheetCreate} from "../../common/utils";
-import {Colors, CommonStyles, windowHeight} from "../../core/theme";
+import {Colors, windowHeight} from "../../core/theme";
 import LinearGradient from "react-native-linear-gradient";
 import {defaultIdExtractor, getParamsFromProps} from "../../common/helpers";
 import {connectAdv} from "../../core/store";
 import {IAppState} from "../../core/store/appState";
 import {Dispatch} from "redux";
 import {CafeAsyncActions} from "./CafeAsyncActions";
-import {BaseReduxComponent} from "../../core/BaseComponent";
+import {BaseReduxComponent, IReduxProps} from "../../core/BaseComponent";
 import {Drink} from "../../common/components/Drink";
 import {PlainHeader} from "../../common/components/Headers";
 import {CommonHeaderStyles} from "../../core/theme/commonStyles";
@@ -28,7 +28,10 @@ import {FlatListWrapper} from "../../common/components/FlatListWrapper";
 import {EmptyComponent} from "../../common/components/EmptyComponent";
 import {NavigationActions} from "../../navigation/navigation";
 import {ICafeResponse} from "../../core/api/generated/dto/CafeResponse.g";
-import {IProductBriefInfoResponse} from "../../core/api/generated/dto/ProductResponse.g";
+import {NavigationAction, NavigationLeafRoute, NavigationScreenProp} from "react-navigation";
+import {ICommonNavParams} from "../../navigation/actions";
+import {IProductBriefInfoResponse} from "../../core/api/generated/dto/ProductBriefInfoResponse.g";
+import {localization} from "../../common/localization/localization";
 
 interface IState {
     animation: Animated.Value;
@@ -39,6 +42,10 @@ interface IStateProps {
     error: string;
     cafeInfo: ICafeResponse;
     listDrinks: IProductBriefInfoResponse[] | [];
+}
+
+interface IProps extends IReduxProps<IStateProps, IEmpty> {
+    navigation: NavigationScreenProp<NavigationLeafRoute<ICommonNavParams>, NavigationAction>;
 }
 
 interface IDispatchProps {
@@ -57,7 +64,7 @@ TODO: cafeInfo не должно иметь в этом случае ИЛИ, е�
     ({cafeInfo}: IAppState): IStateProps => ({
         loadState: cafeInfo.loadState,
         error: cafeInfo.error,
-        cafeInfo: cafeInfo.cafeInfo || {name: "", address: "", coordinates: "", description: ""},
+        cafeInfo: cafeInfo.cafeInfo!,
         listDrinks: cafeInfo.listDrinks,
     }),
     (dispatch: Dispatch): IDispatchProps => ({
@@ -79,15 +86,15 @@ TODO: cafeInfo не должно иметь в этом случае ИЛИ, е�
     }),
 )
 
-export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IState> {
+export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IState, IProps> {
 
     private animatedStyle: ViewStyle;
     private transformForwardAnimation: Animated.CompositeAnimation;
     private transformBackAnimation: Animated.CompositeAnimation;
 
     static navigationOptions = PlainHeader({ title: "CoffeTime", headerStyle: CommonHeaderStyles.defaultHeaderStyle});
-
-    constructor(props: IStateProps) {
+    //TODO: какой тут тип у пропсов указывать?
+    constructor(props: any) {
         super(props);
         this.state = {
             animation: new Animated.Value(0),
@@ -109,22 +116,15 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
     }
 
     componentDidMount(): void {
-        //TODO: Нужно описать тип и избавиться от ts-ignore
-        //@ts-ignore
         const {id} = getParamsFromProps(this.props);
         this.dispatchProps.getInfo(id);
         this.dispatchProps.getDrinks(id);
     }
 
     render(): JSX.Element {
-        console.log("RENDER");
-        //TODO: Пропущен ;
-        const {loadState, listDrinks, error} = this.stateProps
-        //TODO: В connect видно что это условие невыполнимо
-        if (this.stateProps.cafeInfo != null) {
+        const {loadState, listDrinks, error} = this.stateProps;
+
             return (
-                //TODO: Лишние контейнеры, потенциально можно оставить только один
-                <View style={CommonStyles.flex1}>
                     <View style={styles.listDrinks}>
                         <FlatListWrapper
                             data={listDrinks}
@@ -140,58 +140,40 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
                             numColumns={2}
                         />
                     </View>
-                </View>
             );
-        } else {
-            return <View/>;
-        }
-
     }
 
     private setFavoriteDrink = async (drinkId: string): Promise<void> => {
-        /*
-            TODO: В целом не правильная работа с redux, ты не должен изменять данные таким образом никогда,
-             изменения должны происходить в reducer'e, это можно было достигнуть если вносить изменения на всех 3-х action'aх
-             Также нужно удалить ts-ignore
-        */
         const drink = this.stateProps.listDrinks.find(_ => _.id == drinkId);
         if (drink) {
             if (drink.favorite) {
-                //@ts-ignore
-                this.stateProps.listDrinks.find(_ => _.id == drinkId).favorite = false;
-                //@ts-ignore
-                this.stateProps.listDrinks.find(_ => _.id == drinkId).name = "1231312313";
                 await this.dispatchProps.unsetFavorite(drinkId);
-                console.log("unsetFavorite");
             } else {
-                //@ts-ignore
-                this.stateProps.listDrinks.find(_ => _.id == drinkId).favorite = true;
                 await this.dispatchProps.setFavorite(drinkId);
-                console.log("setFavorite");
             }
         }
-        //@ts-ignore
         const {id} = getParamsFromProps(this.props);
-        await this.dispatchProps.getDrinks(id);
-        console.log("setFavoriteDrink FINISH");
+        this.dispatchProps.getDrinks(id);
     };
 
     private gotoDrinkPage = (id: string): void => {
         this.dispatchProps.gotoDrinkInfo(id);
-    }
+    };
+
+    private gradientColor = [Colors.transparent, Colors.transparent, Colors.waterOval];
+    private gradientLocation = [0, 0.4, 1];
 
     private renderListHeader = (): JSX.Element => {
-        //TODO: В целом, хорошо было бы вынести это в компонент
         const {cafeInfo} = this.stateProps;
-        const favoriteIcon: JSX.Element = this.state.isFiltered ? <Image source={require("../../../resources/images/icon_heart_pink.png")}/>
+        const filterIcon: JSX.Element = this.state.isFiltered ? <Image source={require("../../../resources/images/icon_heart_pink.png")}/>
         : <Image source={require("../../../resources/images/icon_heart_gray.png")}/>;
 
         return (
             <ImageBackground style={styles.container} source={{uri: cafeInfo.images}}>
-                //TODO: Массивы нужно было вынести в переменные, и в качестве цветов использовать цвета из Colors
+
                 <LinearGradient
-                    colors={["transparent", "transparent", "#F7ECDA"]}
-                    locations={[0, 0.4, 1]}
+                    colors={this.gradientColor}
+                    locations={this.gradientLocation}
                     style={styles.linearGradient}
                 >
                     <View style={styles.background}>
@@ -201,7 +183,7 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
                             <TouchableWithoutFeedback onPress={this.imageClickHandler}>
                                 <View style={styles.checkBox}>
                                     <Animated.View style={this.animatedStyle}>
-                                            {favoriteIcon}
+                                            {filterIcon}
                                     </Animated.View>
                                 </View>
                             </TouchableWithoutFeedback>
@@ -213,6 +195,7 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
     }
 
     //TODO: Можно упростить тип, ведь index тебе не нужен здесь
+    // Индекс нужен, чтоб узнать справа или слева находится карточка напитка, чтоб везде был одинаковый отступ.
     private renderDrink = ({item, index }: {item: IProductBriefInfoResponse, index: number}): JSX.Element => {
         return (
                 <Drink
@@ -230,37 +213,24 @@ export class CafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
         );
     }
 
-    //TODO: Можно сократить количество строчек, пропущен ;, текст в локализации должен быть
     private renderEmptyComponent = (): JSX.Element => {
-        return (
-            <EmptyComponent title={"Список напитков пуст"}/>
-        );
+        return <EmptyComponent title={localization.common.emptyDrinkList}/>;
     }
 
     private tryAgain = (): void => {
-        //@ts-ignore
         const {id} = getParamsFromProps(this.props);
         this.dispatchProps.getDrinks(id);
-
-        console.log("tryAgain");
     }
 
     private imageClickHandler = (): void => {
         if (!this.state.isFiltered) {
-            console.log("вперёд", this.state.animation);
-            Animated.sequence([
-                this.transformForwardAnimation,
-            ]).start();
+            this.transformForwardAnimation.start();
         } else {
-            console.log("назад", this.state.animation);
-            Animated.sequence([
-                this.transformBackAnimation,
-            ]).start();
+            this.transformBackAnimation.start();
         }
         if (!this.state.isFiltered) {
             this.stateProps.listDrinks = this.stateProps.listDrinks.filter(_ => _.favorite);
         } else {
-            //@ts-ignore
             const {id} = getParamsFromProps(this.props);
             this.dispatchProps.getDrinks(id);
         }
@@ -297,7 +267,7 @@ const styles = styleSheetCreate({
     } as ViewStyle,
     linearGradient: {
         flex: 1,
-    },
+    } as ViewStyle,
     checkBox: {
         backgroundColor: Colors.white,
         borderRadius: 20,

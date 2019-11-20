@@ -1,6 +1,6 @@
 import {LoadState} from "../../common/loadState";
 import {ICafeResponse} from "../../core/api/generated/dto/CafeResponse.g";
-import {IProductBriefInfoResponse} from "../../core/api/generated/dto/ProductResponse.g";
+import {IProductBriefInfoResponse} from "../../core/api/generated/dto/ProductBriefInfoResponse.g";
 
 export interface ICafeState {
     loadState: LoadState;

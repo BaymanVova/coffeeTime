@@ -3,14 +3,13 @@ import {
     View,
     Text,
     Image,
-    StyleSheet,
-    TouchableOpacity,
     Animated,
-    Easing,
-    TouchableWithoutFeedback, ViewStyle,
+    TouchableWithoutFeedback, ViewStyle, TextStyle, ImageStyle,
 } from "react-native";
 import {Colors, Fonts} from "../../core/theme";
-import {styleSheetFlatten} from "../utils";
+import {styleSheetCreate, styleSheetFlatten} from "../utils";
+import {FavoriteIcon} from "./FavoriteIcon";
+import {localization} from "../localization/localization";
 
 interface IProps {
     id: string;
@@ -24,77 +23,50 @@ interface IProps {
     navigate: (id: string) => void;
 }
 interface IState {
-    removeAnim: Animated.Value;
+    animationSize: Animated.Value;
 }
 
 export class Drink extends PureComponent<IProps, IState> {
-    private animatedStyle: ViewStyle;
-    private transformAnimation: Animated.CompositeAnimation;
 
-    constructor(props: IProps) {
-        super(props);
-        this.state = {
-            removeAnim: new Animated.Value(1),
-        };
-        this.animatedStyle = {
-            transform: [ {
-                scale: this.state.removeAnim.interpolate({ inputRange: [1, 2, 3, 4, 5], outputRange: [1, 1.4, 1, 1.4, 1]})}] as any };
-        this.transformAnimation = Animated.timing(this.state.removeAnim, {
-            toValue: 5,
-            duration: 800,
-            easing: Easing.linear,
-            useNativeDriver: true,
-        });
-    }
     render(): JSX.Element {
         const {name, price, imagePath, favorite, index} = this.props;
-        console.log(imagePath);
-        const favoriteIcon: JSX.Element = favorite ? <Image source={require("../../../resources/images/icon_heart_pink.png")}/>
-                                                   : <Image source={require("../../../resources/images/icon_heart_gray.png")}/>;
 
         return (
             <TouchableWithoutFeedback onPress={this.gotoDrinkPage}>
                 <View style={styles.container}>
                     <View style={styleSheetFlatten(styles.innerContainer, (index % 2) ? styles.marginOdd : styles.marginEven )}>
                         <Text style={styles.nameDrink}>{name}</Text>
-                        <Text style={styles.description}>кофейный напиток</Text>
+                        <Text style={styles.description}>{localization.common.coffeeDrink}</Text>
                         <Image
                             style={styles.image}
                             source={{uri: imagePath }}
                         />
                         <View style={styles.containerRow}>
-                            <Text style={styles.price}>{price} P</Text>
-                            <Animated.View style={this.animatedStyle}>
-                                <TouchableOpacity onPress={this.imageClickHandler}>
-                                    {favoriteIcon}
-                                </TouchableOpacity>
-                            </Animated.View>
+                            <Text style={styles.price}>{price}{localization.common.currency}</Text>
+                            <FavoriteIcon
+                                favorite={favorite}
+                                setFavorite={this.imageClickHandler}
+                            />
                         </View>
                     </View>
                 </View>
             </TouchableWithoutFeedback>
         );
     }
-    private imageClickHandler = async (): Promise<void> => {
-        //TODO: Это не должна быть async операцией
-        await this.props.SetFavorite(this.props.id);
-        console.log("анимация");
-        //TODO: Здесь sequence не нужен
-        Animated.sequence([
-            this.transformAnimation,
-        ]).start(() => { this.setState({removeAnim: new Animated.Value(1)}); });
+    private imageClickHandler = (): void => {
+        this.props.SetFavorite(this.props.id);
     };
     private gotoDrinkPage = (): void => {
         this.props.navigate(this.props.id);
     };
 }
 
-const styles = StyleSheet.create({
+const styles = styleSheetCreate({
     container: {
         width: "50%",
         height: 225,
         paddingVertical: 5,
-    },
+    } as ViewStyle,
     innerContainer: {
         flex: 1,
         padding: 10,
@@ -103,22 +75,21 @@ const styles = StyleSheet.create({
             width: 7,
             height: 7,
         },
-        shadowOpacity: 1.0,
         elevation: 7,
         backgroundColor: Colors.white,
         marginHorizontal: 10,
-    },
+    } as ViewStyle,
     nameDrink: {
         fontSize: 16,
         color: Colors.gray,
         fontFamily: Fonts.bold,
         fontWeight: "bold",
-    },
+    } as TextStyle,
     description: {
         fontSize: 12,
         fontFamily: Fonts.regular,
         color: Colors.gray,
-    },
+    } as TextStyle,
     image: {
         flex: 1,
         maxWidth: "100%",
@@ -126,21 +97,22 @@ const styles = StyleSheet.create({
         alignSelf: "stretch",
         marginTop: 15,
         marginBottom: 5,
-    },
+    } as ImageStyle,
     containerRow: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-    },
+    } as ViewStyle,
     marginEven: {
         marginHorizontal: 10,
-    },
+    } as ViewStyle,
     marginOdd: {
         marginRight: 10,
         marginLeft: 0,
-    },
+    } as ViewStyle,
     price: {
         color: Colors.green,
         fontSize: 24,
         fontFamily: Fonts.lobster,
-    }});
+    } as TextStyle,
+});

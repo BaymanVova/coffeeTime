@@ -1,6 +1,6 @@
 /*tslint:disable*/
 
 export interface IUserRequest {
-    email?: string | undefined;
+    email?: string;
     password: string;
 }

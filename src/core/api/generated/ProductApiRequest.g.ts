@@ -1,7 +1,8 @@
 import { BaseRequest } from "../BaseRequest";
 import {IProductRequest} from "./dto/ProductRequest.g";
-import {IProductBriefInfoResponse, IProductFullInfoResponse} from "./dto/ProductResponse.g";
+import {IProductFullInfoResponse} from "./dto/ProductResponse.g";
 import {ICafeRequest} from "./dto/CafeRequest.g";
+import {IProductBriefInfoResponse} from "./dto/ProductBriefInfoResponse.g";
 
 export class ProductApiRequest extends BaseRequest {
     constructor (protected baseUrl: string) {
@@ -11,7 +12,6 @@ export class ProductApiRequest extends BaseRequest {
     }
 
     getProductsCafe(myCafe: ICafeRequest, config?: Object): Promise<IProductBriefInfoResponse[]> {
-        console.log("getProductCafe");
 
         return this.fetch("/api/Product/GetProductsCafe",
             Object.assign({
@@ -23,7 +23,6 @@ export class ProductApiRequest extends BaseRequest {
     }
 
     getProduct(myProduct: IProductRequest, config?: Object): Promise<IProductFullInfoResponse> {
-        console.log("getProduct");
 
         return this.fetch("/api/Product/GetProduct",
             Object.assign({

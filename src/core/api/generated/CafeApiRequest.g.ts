@@ -21,7 +21,6 @@ export class CafeApiRequest extends BaseRequest {
     }
 
     getCafe(cafeRequest: ICafeRequest, config?: Object): Promise<ICafeResponse> {
-        console.log("Новое API");
 
         return this.fetch(
             "/api/Cafe/GetCafe",

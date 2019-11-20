@@ -2,6 +2,7 @@ import React, {PureComponent} from "react";
 import {View, Text, Image, ViewStyle, ImageStyle, TextStyle, TouchableOpacity} from "react-native";
 import {styleSheetCreate} from "../utils";
 import {Colors, Fonts} from "../../core/theme";
+import {localization} from "../localization/localization";
 
 interface ICafeProps {
     id?: string;
@@ -14,10 +15,7 @@ interface ICafeProps {
 }
 
 export class Cafe extends PureComponent<ICafeProps> {
-    //TODO: Ненужный конструктор
-    constructor(props: ICafeProps) {
-        super(props);
-    }
+
     private navigateToCafeInfo = (): void => {
         this.props.onPress(this.props.id);
     }
@@ -35,10 +33,10 @@ export class Cafe extends PureComponent<ICafeProps> {
                     </View>
                 <View style={styles.description}>
                     <Text style={styles.title}>{name}</Text>
-                    <Text style={styles.findUs}>мы находимся:</Text>
+                    <Text style={styles.findUs}>{localization.common.weLocate}</Text>
                     <Text style={styles.address}>{address}</Text>
                     <TouchableOpacity onPress={this.navigateToCafeInfo}>
-                        <Text style={styles.detail}>подробнее   ></Text>
+                        <Text style={styles.detail}>{localization.common.detail}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -55,7 +53,6 @@ const styles = styleSheetCreate({
             width: 3,
             height: 3,
         },
-        shadowOpacity: 1.0, //TODO: этот код работает только на iOS, для этого нужно использовать platform.os для разделения
         elevation: 5,
     } as ViewStyle,
     boxWithImage: {

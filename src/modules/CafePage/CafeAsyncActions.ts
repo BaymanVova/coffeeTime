@@ -11,7 +11,6 @@ export class CafeAsyncActions {
                 dispatch(CafeActions.getInfo.started);
                 const sessionId = getState().system.authToken || "";
                 const cafeInfo = await requestsRepository.cafeApiRequest.getCafe({sessionId, cafeId});
-                console.log("cafeInfo", cafeInfo);
                 dispatch(CafeActions.getInfo.done({params: cafeId, result: cafeInfo}));
             } catch (error) {
                 dispatch(CafeActions.getInfo.failed(error));
@@ -25,7 +24,6 @@ export class CafeAsyncActions {
                 dispatch(CafeActions.getListDrinks.started);
                 const sessionId = getState().system.authToken || "";
                 const listDrinks = await requestsRepository.productsApiRequest.getProductsCafe({sessionId, cafeId}) || [];
-                console.log("listDrinks", listDrinks);
                 dispatch(CafeActions.getListDrinks.done({params: cafeId, result: listDrinks}));
             } catch (error) {
                 dispatch(CafeActions.getListDrinks.failed(error));

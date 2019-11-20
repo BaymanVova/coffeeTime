@@ -4,6 +4,7 @@ import {styleSheetCreate, styleSheetFlatten} from "../../utils";
 import {Colors, Fonts} from "../../../core/theme";
 
 //TODO: Не совсем понятно зачем папку создавать
+//Не знаю, но хотел как-то разделить структуру, чтоб проще элементы находить и понятнее к чему они относятся
 export class AuthInput extends PureComponent<TextInputProps> {
         render(): JSX.Element {
             return (

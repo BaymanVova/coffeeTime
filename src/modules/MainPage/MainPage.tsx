@@ -10,6 +10,7 @@ import {RoundButton} from "../../common/components/UI/RoundButton";
 import {NoHeader} from "../../common/components/Headers";
 import {Title} from "../../common/components/Title";
 import {Colors, Fonts} from "../../core/theme";
+import {localization} from "../../common/localization/localization";
 
 interface IDispatchProps {
     gotoLogin: () => void;
@@ -41,14 +42,14 @@ export class MainPage extends BaseReduxComponent<IEmpty, IDispatchProps, IEmpty>
             <ImageBackground style={styles.container} source={require("../../../resources/images/main_background.png")}>
                 <LinearGradient colors={["transparent", "rgba(243, 233, 216, 0.8)"]}  style={styles.linearGradient}>
                     <View style={styles.inner}>
-                        <Title style={styles.title}>{"CoffeTime"}</Title>
-                        <Text style={styles.subtitle}>территория кофе</Text>
+                        <Title style={styles.title}>{localization.auth.coffeTime}</Title>
+                        <Text style={styles.subtitle}>{localization.auth.territory}</Text>
                         <View style={styles.groupButton}>
                             <RoundButton click={this.onLoginPress}>
-                                Вход
+                                {localization.auth.signIn}
                             </RoundButton>
                             <RoundButton click={this.onRegistrationPress}>
-                                Регистрация
+                                {localization.auth.register}
                             </RoundButton>
                         </View>
                     </View>

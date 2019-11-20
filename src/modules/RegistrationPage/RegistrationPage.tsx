@@ -14,7 +14,7 @@ import {RoundButton} from "../../common/components/UI/RoundButton";
 import {styleSheetCreate} from "../../common/utils";
 import {Colors, Fonts} from "../../core/theme";
 import {NavigationActions} from "../../navigation/navigation";
-import {KeyboardAvoidingViewWrapper} from "../../common/components/KeyboardAvodingViewWrapper";
+import {localization} from "../../common/localization/localization";
 
 interface IStateProps {
     isRegistration: boolean;
@@ -67,33 +67,31 @@ export class RegistrationPage extends BaseReduxComponent<IStateProps, IDispatchP
         return (
 
             <ImageBackground style={styles.container} source={require("../../../resources/images/main_background.png")}>
-                <KeyboardAvoidingViewWrapper style={{flex: 1}}>
                 <LinearGradient colors={["transparent", "rgba(243, 233, 216, 0.8)"]}  style={styles.linearGradient}>
                     <View style={styles.inner}>
-                        <Title style={styles.title}>{"CoffeTime"}</Title>
-                        <Text style={styles.subtitle}>территория кофе</Text>
+                        <Title style={styles.title}>{localization.auth.coffeTime}</Title>
+                        <Text style={styles.subtitle}>{localization.auth.territory}</Text>
                         <View style={styles.groupinput}>
                             <AuthInput
-                                placeholder={"Email"}
+                                placeholder={localization.auth.email}
                                 value={this.state.email}
                                 onChangeText={this.onLoginChange}
                             />
                             <AuthInput
-                                placeholder={"Password"}
+                                placeholder={localization.auth.password}
                                 value={this.state.password}
                                 onChangeText={this.onPasswordChange}
                                 secureTextEntry={true}
                             />
                             <RoundButton click={this.onRegPress}>
-                                Регистрация
+                                {localization.auth.register}
                             </RoundButton>
                             <RoundButton click={this.dispatchProps.navigateToBack}>
-                                Назад
+                                {localization.auth.back}
                             </RoundButton>
                         </View>
                     </View>
                 </LinearGradient>
-                </KeyboardAvoidingViewWrapper>
             </ImageBackground>
 
         );
@@ -134,5 +132,4 @@ const styles = styleSheetCreate({
         alignItems: "center",
         justifyContent: "flex-end",
     } as ViewStyle,
-})
-
+});

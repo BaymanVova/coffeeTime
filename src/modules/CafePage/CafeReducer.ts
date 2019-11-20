@@ -5,7 +5,7 @@ import {CafeActions} from "./CafeActions";
 import {Failure, Success} from "typescript-fsa";
 import {LoadState} from "../../common/loadState";
 import {ICafeResponse} from "../../core/api/generated/dto/CafeResponse.g";
-import {IProductBriefInfoResponse} from "../../core/api/generated/dto/ProductResponse.g";
+import {IProductBriefInfoResponse} from "../../core/api/generated/dto/ProductBriefInfoResponse.g";
 
 function getInfoStartedHandler(state: ICafeState): ICafeState {
     return newState(state, {loadState: LoadState.firstLoad, error: ""});

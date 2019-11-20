@@ -10,8 +10,6 @@ function simpleToRoute(routeName: string): () => NavigationAction {
     return (): NavigationAction => NavigationActions.navigate({routeName});
 }
 
-//TODO: Если используешь эту функцию, то ts-ignore нужно убирать, он там находился т.к. не был используем
-// @ts-ignore
 function routeWithParams<T>(routeName: string): (params: T) => NavigationAction {
     return (params: T): NavigationAction => NavigationActions.navigate({routeName, params});
 }
