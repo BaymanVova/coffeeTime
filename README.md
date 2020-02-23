@@ -6,7 +6,17 @@
 ● Android (начиная с версии 5.0)
 ● iOS (начиная с версии 9.0)
 При реализации стараться использовать последние версии компонентов.
+
+
+
+
+
+
+
+
 **Скриншоты**
+
+
 ![Image of ListCoffe](https://github.com/BaymanVova/coffeeTime/blob/master/resources/images/ListCoffe.png)
 ![Image of Drinks](https://github.com/BaymanVova/coffeeTime/blob/master/resources/images/Drinks.png)
 ![Image of DrinkInfo](https://github.com/BaymanVova/coffeeTime/blob/master/resources/images/DrinkInfo.png)
