@@ -14,6 +14,7 @@ import {LoadState} from "../../common/loadState";
 import {defaultIdExtractor} from "../../common/helpers";
 import {EmptyComponent} from "../../common/components/EmptyComponent";
 import {ICafeResponse} from "../../core/api/generated/dto/CafeResponse.g";
+import {localization} from "../../common/localization/localization";
 
 interface IStateProps {
     listCafe: ICafeResponse[] | null;
@@ -41,11 +42,10 @@ interface IDispatchProps {
     }),
 )
 export class ListCafePage extends BaseReduxComponent<IStateProps, IDispatchProps, IEmpty> {
-    static navigationOptions = PlainHeader({ title: "CoffeTime", headerStyle: CommonHeaderStyles.defaultHeaderStyle});
+    static navigationOptions = PlainHeader({ title: localization.auth.coffeTime, headerStyle: CommonHeaderStyles.defaultHeaderStyle});
 
     componentDidMount(): void {
         this.dispatchProps.getListCafe();
-        console.log("componentDidMount: ", this.stateProps.listCafe);
     }
     private navigateToCafeInfo = (id: string): void => {
         this.dispatchProps.goToCafeInfo(id);
@@ -93,7 +93,7 @@ export class ListCafePage extends BaseReduxComponent<IStateProps, IDispatchProps
     private renderEmptyComponent = (): JSX.Element => {
         return (
             <EmptyComponent
-                title={"Список пуск"}
+                title={localization.common.emptyList}
             />
         );
     };

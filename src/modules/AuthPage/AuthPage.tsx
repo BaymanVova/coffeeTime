@@ -12,6 +12,7 @@ import {AuthInput} from "../../common/components/UI/AuthInput";
 import {Title} from "../../common/components/Title";
 import {Colors, Fonts} from "../../core/theme";
 import {NavigationActions} from "../../navigation/navigation";
+import {localization} from "../../common/localization/localization";
 
 interface IStateProps {
     isAuthorizing: boolean;
@@ -45,47 +46,54 @@ interface IState {
 export class AuthPage extends BaseReduxComponent<IStateProps, IDispatchProps, IState> {
     static navigationOptions = NoHeader();
 
-    constructor(props: any) {
+    constructor(props: IEmpty) {
         super(props);
+        //TODO: Не должно быть здесь
+        //Пока на этапе тестирования для ускорения ввода
         this.state = {
             login: "vladika_ept@mail.ru",
             password: "123456",
         };
     }
+
     private onLoginChange = (login: string): void => {
-        this.setState({login: login});
+        this.setState({login});
     };
     private onPasswordChange = (password: string): void => {
-        this.setState({password: password});
+        this.setState({password});
     };
     render(): JSX.Element {
         const {login, password} = this.state;
 
+        //TODO: Ждать следующего стрима, где покажут как с изображениями работать
+        //TODO: Указываются не все параметры для Input'ов (большего комфорта пользователя), покажу в стриме
+        //TODO: Оба текста должны быть вынесены в локализации
+        //TODO: Что-то не так пошло с отступами, скорее всего был ещё один контейнер и просто потом исчез
+        // у меня вроде норм всё с оступами
+
         return (
             <ImageBackground style={styles.container} source={require("../../../resources/images/main_background.png")}>
-                    <View style={styles.inner}>
-                        <Title style={styles.title}>{"CoffeTime"}</Title>
-                        <Text style={styles.subtitle}>территория кофе</Text>
+                        <Title style={styles.title}>{localization.auth.coffeTime}</Title>
+                        <Text style={styles.subtitle}>{localization.auth.territory}</Text>
                         <View style={styles.groupinput}>
                             <AuthInput
-                                placeholder={"Email"}
+                                placeholder={localization.auth.email}
                                 value={login}
                                 onChangeText={this.onLoginChange}
                             />
                             <AuthInput
-                                placeholder={"Password"}
+                                placeholder={localization.auth.password}
                                 value={password}
                                 onChangeText={this.onPasswordChange}
                                 secureTextEntry={true}
                             />
                             <RoundButton click={this.onLoginPress} disabled={this.stateProps.isAuthorizing}>
-                                Вход
+                                {localization.auth.signIn}
                             </RoundButton>
                             <RoundButton click={this.dispatchProps.navigateToBack}>
-                                Назад
+                                {localization.auth.back}
                             </RoundButton>
                         </View>
-                    </View>
             </ImageBackground>
         );
     }
@@ -93,15 +101,12 @@ export class AuthPage extends BaseReduxComponent<IStateProps, IDispatchProps, IS
         this.dispatchProps.login(this.state.login, this.state.password);
     };
 }
-
+//TODO: Лучше стараться не использовать width: "100%"
 const styles = styleSheetCreate({
     container: {
         flex: 1,
         paddingTop: "20%",
         paddingBottom: "10%",
-    } as ViewStyle,
-    inner: {
-        flex: 1,
         alignItems: "center",
     } as ViewStyle,
     title: {
@@ -126,4 +131,4 @@ const styles = styleSheetCreate({
         alignItems: "center",
         justifyContent: "flex-end",
     } as ViewStyle,
-})
+});

@@ -1,5 +1,5 @@
 import React from "react";
-import {Animated, Easing, Image, ImageStyle, Text, TextStyle, TouchableOpacity, View, ViewStyle} from "react-native";
+import {Image, ImageStyle, Text, TextStyle, TouchableOpacity, View, ViewStyle} from "react-native";
 import {Title} from "../../common/components/Title";
 import {styleSheetCreate} from "../../common/utils";
 import {Colors, Fonts, windowHeight} from "../../core/theme";
@@ -11,10 +11,14 @@ import {connectAdv} from "../../core/store";
 import {IAppState} from "../../core/store/appState";
 import {Dispatch} from "redux";
 import {DrinkAsyncAction} from "./DrinkAsyncAction";
-import {BaseReduxComponent} from "../../core/BaseComponent";
+import {BaseReduxComponent, IReduxProps} from "../../core/BaseComponent";
 import {getParamsFromProps} from "../../common/helpers";
 import {CafeAsyncActions} from "../CafePage/CafeAsyncActions";
 import {IProductFullInfoResponse} from "../../core/api/generated/dto/ProductResponse.g";
+import {NavigationAction, NavigationLeafRoute, NavigationScreenProp} from "react-navigation";
+import {ICommonNavParams} from "../../navigation/actions";
+import {FavoriteIcon} from "../../common/components/FavoriteIcon";
+import {localization} from "../../common/localization/localization";
 
 interface IStateProps {
     loadState: LoadState;
@@ -29,9 +33,11 @@ interface IDispatchProps {
 }
 interface IState {
     isFavorite: boolean;
-    removeAnim: Animated.Value;
 }
 
+interface IProps extends IReduxProps<IStateProps, IEmpty> {
+    navigation: NavigationScreenProp<NavigationLeafRoute<ICommonNavParams>, NavigationAction>;
+}
 @connectAdv(
     ({drinkInfo}: IAppState): IStateProps => ({
         loadState: drinkInfo.loadState,
@@ -51,44 +57,25 @@ interface IState {
     }),
 )
 
-export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps, IState> {
+export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps, IState, IProps> {
     static navigationOptions = PlainHeader({ title: "CoffeTime", headerStyle: CommonHeaderStyles.defaultHeaderStyle});
 
-    private animatedStyle: ViewStyle;
-    private transformAnimation: Animated.CompositeAnimation;
-
-    constructor(props: IStateProps) {
+    constructor(props: any) {
         super(props);
         this.state = {
-            removeAnim: new Animated.Value(1),
             isFavorite : false,
         };
-        this.animatedStyle = {
-            transform: [ {
-                scale: this.state.removeAnim.interpolate({ inputRange: [1, 2, 3, 4, 5], outputRange: [1, 1.4, 1, 1.4, 1]})}] as any };
-        this.transformAnimation = Animated.timing(this.state.removeAnim, {
-            toValue: 5,
-            duration: 800,
-            easing: Easing.linear,
-            useNativeDriver: true,
-        });
     }
 
     componentDidMount(): void {
-        //@ts-ignore
         const {id} = getParamsFromProps(this.props);
         this.dispatchProps.getDrink(id);
-        console.log("favarite", this.stateProps.drinkInfo!.favarite );
-        console.log("favarite2", this.stateProps );
-        this.setState({isFavorite: this.stateProps.drinkInfo!.favarite });
-        console.log("favarite3",  this.state.isFavorite);
+        this.setState({isFavorite: this.stateProps.drinkInfo!.favorite });
     }
     render(): JSX.Element {
-        console.log("RENDER", this.state.isFavorite);
         const {drinkInfo} = this.stateProps;
-        const favoriteIcon: JSX.Element | null = drinkInfo ? this.state.isFavorite ? <Image source={require("../../../resources/images/icon_heart_pink.png")}/>
-            : <Image source={require("../../../resources/images/icon_heart_gray.png")}/> : null;
         if (drinkInfo) {
+            //TODO: Должно быть в локалищации
             return (
                 <View style={styles.container}>
                     <Image style={styles.image} source={{uri: drinkInfo.imagesPath}}/>
@@ -97,11 +84,10 @@ export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps, I
                             <Title>
                                 {drinkInfo.productName}
                             </Title>
-                            <Animated.View style={this.animatedStyle}>
-                                <TouchableOpacity style={styles.hearthButton} onPress={() => this.setFavorite(drinkInfo.id)}>
-                                    {favoriteIcon}
-                                </TouchableOpacity>
-                            </Animated.View>
+                            <FavoriteIcon
+                                favorite={this.state.isFavorite}
+                                setFavorite={this.setFavorite}
+                            />
                         </View>
                         <View style={styles.ingredients}>
                             <Ingredient
@@ -126,10 +112,7 @@ export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps, I
                             />
                         </View>
                         <Text style={styles.text}>
-                            Здесь могло быть описание напитка, но почему-то сервер его не возвращает,
-                            а в макете он есть,
-                            поэтому <Text style={{textDecorationLine: "line-through"}}>всегда</Text> пока
-                            вы будете видеть этот текст.
+                           {localization.common.description}
                         </Text>
                         <View style={styles.order}>
                             <View style={styles.line}>
@@ -137,7 +120,7 @@ export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps, I
                                     {drinkInfo.price} P
                                 </Text>
                                 <TouchableOpacity style={styles.button}>
-                                    <Text style={styles.textButton}>Заказать</Text>
+                                    <Text style={styles.textButton}>{localization.common.order}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -147,26 +130,21 @@ export class DrinkPage extends BaseReduxComponent<IStateProps, IDispatchProps, I
         } else {
             return (
               <View>
-                  <Text>Информации о напитке нет</Text>
+                  <Text>{localization.common.noInformation}</Text>
               </View>
             );
         }
     }
 
-    private setFavorite = async (drinkId: string): Promise<void> => {
-        Animated.sequence([
-            this.transformAnimation,
-        ]).start(() => { this.setState({removeAnim: new Animated.Value(1)}); });
+    private setFavorite = (): void => {
+        const {id} = getParamsFromProps(this.props);
         if (!this.state.isFavorite) {
             this.setState({isFavorite: true});
-            await this.dispatchProps.setFavorite(drinkId);
+            this.dispatchProps.setFavorite(id);
         } else if (this.state.isFavorite) {
             this.setState({isFavorite: false});
-            await this.dispatchProps.unsetFavorite(drinkId);
+            this.dispatchProps.unsetFavorite(id);
         }
-        //@ts-ignore
-       // const {id} = getParamsFromProps(this.props);
-        //await this.dispatchProps.getDrink(id);
     };
 }
 

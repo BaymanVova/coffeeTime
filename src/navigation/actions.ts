@@ -10,7 +10,6 @@ function simpleToRoute(routeName: string): () => NavigationAction {
     return (): NavigationAction => NavigationActions.navigate({routeName});
 }
 
-// @ts-ignore
 function routeWithParams<T>(routeName: string): (params: T) => NavigationAction {
     return (params: T): NavigationAction => NavigationActions.navigate({routeName, params});
 }

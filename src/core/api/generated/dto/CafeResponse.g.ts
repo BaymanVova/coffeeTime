@@ -1,9 +1,9 @@
 /*tslint:disable*/
 export interface ICafeResponse {
-    id?: string | undefined;
+    id?: string;
     name: string;
     address: string;
     coordinates: string;
     description: string;
-    images?: string | undefined;
+    images?: string;
 }
